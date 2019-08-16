@@ -1,0 +1,4 @@
+.vscode
+etc/openvpn/*
+!.keep
+commands.txt

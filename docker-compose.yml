@@ -1,0 +1,144 @@
+version: '2.3'
+services:
+  vpn:
+    build: ./dockerfiles/vpn
+    image: mandy91/vpn
+    privileged: true
+    init: true
+    volumes:
+      - ./etc/openvpn:/etc/openvpn
+    entrypoint: sleep infinity
+  
+  # Run: docker-compose run --rm -T firefox &>/dev/null &
+  firefox:
+    image: jess/firefox
+    environment:
+      - DISPLAY
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
+      - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - mozilla:/root/.mozilla
+      - /dev/shm:/dev/shm
+      - /etc/machine-id:/etc/machine-id:ro
+    network_mode: service:vpn
+
+  # Run: docker-compose run --rm -T chrome &>/dev/null &
+  chrome:
+    image: jess/chrome
+    environment:
+      - DISPLAY
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
+      - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      # @todo fix permissions of volume
+      # - chrome:/data
+      - /dev/shm:/dev/shm
+      - /etc/machine-id:/etc/machine-id:ro
+    security_opt:
+      - seccomp="seccomp/chrome.json"
+    network_mode: service:vpn
+
+  # Make sure to generate a SSH key first and ssh-copy-id to the server you want to connect to
+  # Run: docker-compose run --rm virt-manager virt-viewer -c qemu+ssh://<user>@<ip>/system <vm_name>
+  virt-manager:
+    image: mandy91/virt-manager
+    build: ./dockerfiles/virt-manager
+    environment:
+      - DISPLAY
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
+      - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ssh_config:/root/.ssh
+      - /dev/shm:/dev/shm
+      - $HOME/downloads:/root/Downloads
+    network_mode: service:vpn
+
+  # Run: docker-compose run --rm vinagre --vnc-scale <ip> &> /tmp/vinagre.log &
+  vinagre:
+    image: mandy91/vinagre
+    build: ./dockerfiles/vinagre
+    environment:
+      - DISPLAY
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
+      - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ssh_config:/root/.ssh
+      - /dev/shm:/dev/shm
+    network_mode: service:vpn
+
+  ssh:
+    image: mandy91/ssh
+    build: ./dockerfiles/ssh
+    environment:
+      - DISPLAY
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ssh_config:/root/.ssh
+      - $HOME/downloads:/root/Downloads
+    network_mode: service:vpn
+
+  network-tools:
+    image: mandy91/network-tools
+    build: ./dockerfiles/network-tools
+    environment:
+      - DISPLAY
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ssh_config:/root/.ssh
+      - $HOME/downloads:/root/Downloads
+    network_mode: service:vpn
+
+  system-tools:
+    image: mandy91/system-tools
+    build: ./dockerfiles/system-tools
+    environment:
+      - DISPLAY
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - $HOME/downloads:/root/Downloads
+    network_mode: service:vpn
+
+  #Run: docker-compose run --rm -T vlc &>/dev/null &
+  vlc:
+    image: jess/vlc
+    environment:
+      - DISPLAY
+      - GDK_SCALE
+      - GDK_DPI_SCALE
+      - QT_DEVICE_PIXEL_RATIO
+    group_add:
+      - video
+      - audio
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
+      - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /dev/shm:/dev/shm
+      - /etc/machine-id:/etc/machine-id:ro
+      - vlc:/home/vlc/.config/vlc
+    devices:
+      - /dev/dri
+    network_mode: service:vpn
+
+volumes:
+  mozilla:
+  chrome:
+  vlc:
+  ssh_config:
