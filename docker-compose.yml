@@ -11,7 +11,8 @@ services:
   
   # Run: docker-compose run --rm -T firefox &>/dev/null &
   firefox:
-    image: jess/firefox
+    build: ./dockerfiles/firefox
+    image: mandy91/firefox
     environment:
       - DISPLAY
     volumes:
@@ -20,9 +21,10 @@ services:
       - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
-      - mozilla:/root/.mozilla
+      - mozilla:/home/firefox/.mozilla
       - /dev/shm:/dev/shm
       - /etc/machine-id:/etc/machine-id:ro
+      - $HOME/Downloads:/home/firefox/Downloads
     network_mode: service:vpn
 
   # Run: docker-compose run --rm -T chrome &>/dev/null &
@@ -40,6 +42,7 @@ services:
       # - chrome:/data
       - /dev/shm:/dev/shm
       - /etc/machine-id:/etc/machine-id:ro
+      - $HOME/downloads:/home/chrome/Downloads
     security_opt:
       - seccomp="seccomp/chrome.json"
     network_mode: service:vpn
@@ -61,6 +64,18 @@ services:
       - /dev/shm:/dev/shm
       - $HOME/downloads:/root/Downloads
     network_mode: service:vpn
+
+  vim:
+    image: mandy91/vim
+    build: ./dockerfiles/vim
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - $HOME/.vimrc:/home/vim/.vimrc:ro
+      - $HOME/.vim:/home/vim/.vim:ro
+      - /:/host
+    network_mode: service:vpn
+
 
   # Run: docker-compose run --rm vinagre --vnc-scale <ip> &> /tmp/vinagre.log &
   vinagre:

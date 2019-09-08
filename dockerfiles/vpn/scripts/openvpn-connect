@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+config="$1"
+auth="$2"
+
+log_file="/tmp/$(echo "$config" | sed -e 's#/#_#g').log"
+
+killswitch-off
+pkill -e openvpn
+
+if [ "$auth" != "" ]; then
+    openvpn --daemon --log "$log_file" --auth-user-pass "/etc/openvpn/$auth" --config "/etc/openvpn/$config"
+else
+    openvpn --daemon --log "$log_file" --config "/etc/openvpn/$config"
+fi
+killswitch-on
+
+timeout 8 tail -f "$log_file"

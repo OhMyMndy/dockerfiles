@@ -7,3 +7,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
   && apt-get autoremove -y \
   && rm -rf /tmp/*
   
+
+RUN groupadd -r vinagre -g 1000 && useradd -u 1000 -r -m -g vinagre -G audio,video vinagre && chown -R vinagre:vinagre /home/vinagre
+
+USER vinagre
