@@ -1,5 +1,7 @@
 # Dockerfiles
 
+[![CircleCI](https://circleci.com/gh/Mandy91/dockerfiles.svg?style=svg)](https://circleci.com/gh/Mandy91/dockerfiles)
+
 ## Setting the project up
 
 ```bash
