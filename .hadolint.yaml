@@ -1,0 +1,14 @@
+ignored:
+  - DL3007
+  - DL3008
+  # Remove apt lists
+  - DL3009
+  # pip specify specific version
+  - DL3013
+  # try to get rid of this
+  - DL3015
+  # npm specify specific version
+  - DL3016
+
+trustedRegistries:
+  - docker.io

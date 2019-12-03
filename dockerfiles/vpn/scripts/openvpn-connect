@@ -3,7 +3,7 @@
 config="$1"
 auth="$2"
 
-log_file="/tmp/$(echo "$config" | sed -e 's#/#_#g').log"
+log_file="/tmp/${config//_/}.log"
 
 killswitch-off
 pkill -e openvpn

@@ -1,159 +1,283 @@
 version: '2.3'
+
+x-default: &default
+  init: true
+  environment:
+    - DISPLAY
+  volumes:
+    - /tmp/.X11-unix:/tmp/.X11-unix
+    - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
+    - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
+    - $HOME/.config/fontconfig:/root/.config/fontconfig
+    - $HOME/.config/fontconfig:/home/mandy/.config/fontconfig
+    - /etc/timezone:/etc/timezone:ro
+    - /etc/localtime:/etc/localtime:ro
+    - /dev/shm:/dev/shm
+    - /etc/machine-id:/etc/machine-id:ro
+
 services:
+
+  ubuntu19.10:
+    <<: *default
+    build:
+      context: ./dockerfiles/ubuntu
+      args:
+        - DOCKER_IMAGE_VERSION=0.1
+        - UBUNTU19_10=0.1-19.10
+        - UBUNTU18_04=0.1-18.04
+        - VERSION=19.10
+        - USER=mandy
+    image: mandy91/ubuntu:${DOCKER_IMAGE_VERSION}-19.10
+
+  ubuntu18.04:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/ubuntu
+      args:
+        - VERSION=18.04
+    image: mandy91/ubuntu:${DOCKER_IMAGE_VERSION}-18.04
+
+  ubuntu-gaming:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/ubuntu-gaming
+    image: mandy91/ubuntu-gaming:${DOCKER_IMAGE_VERSION}
+
   vpn:
-    build: ./dockerfiles/vpn
-    image: mandy91/vpn
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/vpn
+    image: mandy91/vpn:${DOCKER_IMAGE_VERSION}
     privileged: true
-    init: true
     volumes:
       - ./etc/openvpn:/etc/openvpn
     entrypoint: sleep infinity
-  
-  # Run: docker-compose run --rm -T firefox &>/dev/null &
+
   firefox:
-    build: ./dockerfiles/firefox
-    image: mandy91/firefox
-    environment:
-      - DISPLAY
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/firefox
+    image: mandy91/firefox:${DOCKER_IMAGE_VERSION}
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
-      - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
-      - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
       - mozilla:/home/firefox/.mozilla
-      - /dev/shm:/dev/shm
-      - /etc/machine-id:/etc/machine-id:ro
       - $HOME/Downloads:/home/firefox/Downloads
     network_mode: service:vpn
 
-  # Run: docker-compose run --rm -T chrome &>/dev/null &
+
   chrome:
-    image: jess/chrome
-    environment:
-      - DISPLAY
+    extends: ubuntu19.10
+    build: ./dockerfiles/chrome
+    image: mandy91/chrome:${DOCKER_IMAGE_VERSION}
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
-      - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
-      - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-      # @todo fix permissions of volume
-      # - chrome:/data
-      - /dev/shm:/dev/shm
-      - /etc/machine-id:/etc/machine-id:ro
-      - $HOME/downloads:/home/chrome/Downloads
+      - chrome:/data
+      - $HOME/Downloads:/home/mandy/Downloads
     security_opt:
-      - seccomp="seccomp/chrome.json"
+      - seccomp="./seccomp/chrome.json"
     network_mode: service:vpn
 
   # Make sure to generate a SSH key first and ssh-copy-id to the server you want to connect to
   # Run: docker-compose run --rm virt-manager virt-viewer -c qemu+ssh://<user>@<ip>/system <vm_name>
   virt-manager:
-    image: mandy91/virt-manager
-    build: ./dockerfiles/virt-manager
-    environment:
-      - DISPLAY
+    extends: ubuntu19.10
+    image: mandy91/virt-manager:${DOCKER_IMAGE_VERSION}
+    build:
+      context: ./dockerfiles/virt-manager
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
-      - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
-      - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-      - ssh_config:/root/.ssh
-      - /dev/shm:/dev/shm
-      - $HOME/downloads:/root/Downloads
-    network_mode: service:vpn
-
-  vim:
-    image: mandy91/vim
-    build: ./dockerfiles/vim
-    volumes:
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-      - $HOME/.vimrc:/home/vim/.vimrc:ro
-      - $HOME/.vim:/home/vim/.vim:ro
-      - /:/host
-    network_mode: service:vpn
-
-
-  # Run: docker-compose run --rm vinagre --vnc-scale <ip> &> /tmp/vinagre.log &
-  vinagre:
-    image: mandy91/vinagre
-    build: ./dockerfiles/vinagre
-    environment:
-      - DISPLAY
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
-      - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
-      - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-      - ssh_config:/root/.ssh
-      - /dev/shm:/dev/shm
-    network_mode: service:vpn
-
-  ssh:
-    image: mandy91/ssh
-    build: ./dockerfiles/ssh
-    environment:
-      - DISPLAY
-    volumes:
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-      - ssh_config:/root/.ssh
-      - $HOME/downloads:/root/Downloads
-    network_mode: service:vpn
-
-  network-tools:
-    image: mandy91/network-tools
-    build: ./dockerfiles/network-tools
-    environment:
-      - DISPLAY
-    volumes:
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-      - ssh_config:/root/.ssh
-      - $HOME/downloads:/root/Downloads
-    network_mode: service:vpn
-
-  system-tools:
-    image: mandy91/system-tools
-    build: ./dockerfiles/system-tools
-    environment:
-      - DISPLAY
-    volumes:
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-      - $HOME/downloads:/root/Downloads
-    network_mode: service:vpn
-
-  #Run: docker-compose run --rm -T vlc &>/dev/null &
-  vlc:
-    image: jess/vlc
-    environment:
-      - DISPLAY
-      - GDK_SCALE
-      - GDK_DPI_SCALE
-      - QT_DEVICE_PIXEL_RATIO
-    group_add:
-      - video
-      - audio
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
-      - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
-      - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-      - /dev/shm:/dev/shm
-      - /etc/machine-id:/etc/machine-id:ro
-      - vlc:/home/vlc/.config/vlc
+      - ssh_config:/home/virt-manager/.ssh
+      - $HOME/Downloads:/home/mandy/Downloads
     devices:
       - /dev/dri
     network_mode: service:vpn
 
+  vim:
+    extends: ubuntu19.10
+    volumes:
+      - $HOME/.vimrc:/home/mandy/.vimrc:ro
+      - $HOME/.vim:/home/mandy/.vim:ro
+      - /:/host
+    entrypoint: ["vim"]
+    network_mode: service:vpn
+
+  filezilla:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/filezilla
+    image: mandy91/filezilla:${DOCKER_IMAGE_VERSION}
+    volumes:
+      - filezilla:/home/mandy/
+      - ssh_config:/home/mandy/.ssh
+      - $HOME/Downloads:/home/mandy/Downloads
+    network_mode: service:vpn
+
+  # Run: docker-compose run --rm vinagre --vnc-scale <ip> &> /tmp/vinagre.log &
+  vinagre:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/vinagre
+    image: mandy91/vinagre:${DOCKER_IMAGE_VERSION}
+    volumes:
+      - ssh_config:/home/mandy/.ssh
+      - /dev/shm:/dev/shm
+    network_mode: service:vpn
+
+  wine:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/wine
+    image: mandy91/wine:${DOCKER_IMAGE_VERSION}
+    devices:
+      - /dev/dri
+
+  lutris:
+    extends: wine
+    build:
+      context: ./dockerfiles/lutris
+    image: mandy91/lutris:${DOCKER_IMAGE_VERSION}
+    volumes:
+      - /tank:/tank:ro
+      - $HOME/network_media:/home/mandy/network_media
+      - lutris:/home/mandy/.local/share/lutris
+
+
+  mednafen:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/mednafen
+    image: mandy91/mednafen:${DOCKER_IMAGE_VERSION}
+    volumes:
+      - mednafen:/home/mandy/.mednafen
+      - $HOME/Nextcloud/Retro/:/roms:ro
+      - $HOME/Downloads/:/home/mandy/Downloads
+    devices:
+      - /dev/dri
+
+  retroarch:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/retroarch
+    image: mandy91/retroarch:${DOCKER_IMAGE_VERSION}
+    volumes:
+      - retroarch:/home/mandy/.config/retroarch
+      - $HOME/Nextcloud/Retro/:/roms:ro
+      - $HOME/Downloads/:/home/mandy/Downloads
+      - /dev:/dev
+    devices:
+      - /dev/dri
+
+
+  dosbox:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/dosbox
+    image: mandy91/dosbox:${DOCKER_IMAGE_VERSION}
+    volumes:
+      - $HOME/Nextcloud/Retro/:/roms:ro
+      - $HOME/Downloads/:/home/mandy/Downloads
+    devices:
+      - /dev/dri
+
+
+  jupyter:
+    extends: ubuntu19.10
+    image: mandy91/jupyter:${DOCKER_IMAGE_VERSION}
+    build:
+      context: ./dockerfiles/jupyter
+    ports:
+      - 8888:8888
+    volumes:
+      - jupyter:/home/mandy/.jupyter
+      - /tank/media/docs:/home/mandy/Docs
+      - ./etc/jupyter/.bash_aliases:/home/mandy/.bash_aliases
+      - $HOME/Downloads/:/home/mandy/Downloads
+      - /tank:/home/mandy/tank:ro
+
+  mobaxterm:
+    extends: wine
+    build:
+      context: ./dockerfiles/mobaxterm
+    image: mandy91/mobaxterm:${DOCKER_IMAGE_VERSION}
+    volumes:
+      - mobaxterm_wine:/home/mandy/.wine
+
+  ssh:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/ssh
+    image: mandy91/ssh:${DOCKER_IMAGE_VERSION}
+    volumes:
+      - ssh_config:/home/ssh/.ssh
+      - $HOME/Downloads:/home/mandy/Downloads
+    network_mode: service:vpn
+
+  network-tools:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/network-tools
+    image: mandy91/network-tools:${DOCKER_IMAGE_VERSION}
+    init: true
+    environment:
+      - DISPLAY
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ssh_config:/home/mandy/.ssh
+      - $HOME/Downloads:/home/mandy/Downloads:ro
+    network_mode: service:vpn
+
+  system-tools:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/system-tools
+    image: mandy91/system-tools:${DOCKER_IMAGE_VERSION}
+    network_mode: service:vpn
+
+  vlc:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/vlc
+    image: mandy91/vlc:${DOCKER_IMAGE_VERSION}
+    # volumes:
+    # - vlc:/home/vlc/.config/vlc
+    devices:
+      - /dev/dri
+    network_mode: service:vpn
+
+  squid-cache:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/squid-cache
+    image: mandy91/squid-cache:${DOCKER_IMAGE_VERSION}
+    ports:
+      - 3128:3128
+    volumes:
+      - ./dockerfiles/squid-cache/squid.conf:/etc/squid/squid.conf:ro
+      - ./dockerfiles/squid-cache/entrypoint.sh:/entrypoint
+      - $HOME/.squid-cache:/var/cache/squid/
+
+  dev:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/dev
+    image: mandy91/dev:${DOCKER_IMAGE_VERSION}
+    volumes:
+      - $PWD:$PWD
+
+  vscode:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/vscode
+    image: mandy91/vscode:${DOCKER_IMAGE_VERSION}
+    volumes:
+      - $PWD:$PWD
+
 volumes:
   mozilla:
+  filezilla:
   chrome:
   vlc:
   ssh_config:
+  mobaxterm_wine:
+  jupyter:
+  lutris:
+  mednafen:
+  retroarch:

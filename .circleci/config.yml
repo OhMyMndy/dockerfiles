@@ -1,0 +1,62 @@
+---
+version: 2
+jobs:
+  build:
+    # machine: true
+    docker:
+      # - image: circleci/golang:1.12.12-buster
+      - image: mandy91/dotfiles-build:0.1
+    steps:
+      - run:
+          name: Verify docker
+          command: docker --version
+
+      - run:
+          name: Chmod temp folder
+          command: |
+            # Local circleci needs this
+            sudo chmod 777 -R /tmp
+
+      - checkout
+      - setup_remote_docker
+      # docker_layer_caching: true # not available on my plan
+
+      - run:
+          name: Shellcheck
+          command: |
+            set +e
+            failed=0
+            for file in $(git ls-files | xargs -r -i bash -c "file \"{}\" | grep -iq Bourne-Again && echo \"{}\"")
+            do
+              if ! shellcheck -x "$file" -P "$(dirname "$file")"; then
+                failed=1
+              fi
+            done
+            exit $failed
+
+
+      - run:
+          name: Hadolint
+          command: |
+            set +e
+            failed=0
+            for file in $(git ls-files -- 'Dockerfile')
+            do
+              if ! hadolint "$file"; then
+                failed=1
+              fi
+            done
+            exit $failed
+
+      - run:
+          name: Yamllint
+          command: |
+            set +e
+            failed=0
+            for file in $(git ls-files -- '*.yaml' '*.yml')
+            do
+              if ! yamllint -s "$file"; then
+                failed=1
+              fi
+            done
+            exit $failed

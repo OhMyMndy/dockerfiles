@@ -1,13 +1,11 @@
-FROM ubuntu:18.04
+ARG UBUNTU19_10
+FROM mandy91/ubuntu:$UBUNTU19_10
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
+SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends vinagre \
-  && apt-get clean -y \
-  && apt-get autoclean -y \
-  && apt-get autoremove -y \
-  && rm -rf /tmp/*
-  
+USER root
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends fonts-lato vinagre \
+  && apt-get clean -y
+USER $USER
 
-RUN groupadd -r vinagre -g 1000 && useradd -u 1000 -r -m -g vinagre -G audio,video vinagre && chown -R vinagre:vinagre /home/vinagre
-
-USER vinagre
+ENTRYPOINT [ "vinagre" ]

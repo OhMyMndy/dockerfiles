@@ -1,4 +1,11 @@
 .vscode
 etc/openvpn/*
+etc/jupyter
+storage/*
 !.keep
 commands.txt
+
+etc/mednafen
+etc/retroarch
+.history
+*.mxt3

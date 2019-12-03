@@ -1,18 +1,22 @@
-FROM ubuntu:18.04
+ARG UBUNTU19_10
+FROM mandy91/ubuntu:$UBUNTU19_10
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
+SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends virt-manager virt-viewer openssh-client ssh-askpass ssh-askpass-gnome readline-common \
-  && apt-get clean -y \
-  && apt-get autoclean -y \
-  && apt-get autoremove -y \
-  && rm -rf /tmp/*
+USER root
+RUN apt-get update \
+  && DEBIAN_FRONTEND=noninteractive \
+  apt-get install -y --no-install-recommends \
+    fonts-noto \
+    fonts-lato \
+    virt-manager \
+    virt-viewer \
+    openssh-client \
+    ssh-askpass-gnome \
+  && apt-get clean -y
   
 
+USER $USER
 
-RUN groupadd -r virt-manager -g 1000 && useradd -u 1000 -r -m -g virt-manager -G audio,video virt-manager && chown -R virt-manager:virt-manager /home/virt-manager
 
-USER virt-manager
-WORKDIR /home/virt-manager
-VOLUME /home/virt-manager
-
-ENTRYPOINT virt-manager
+ENTRYPOINT [ "virt-manager" ]

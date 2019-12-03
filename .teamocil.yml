@@ -1,0 +1,9 @@
+windows:
+  - name: Dockerfiles
+    root: ~/src/dockerfiles
+    layout: tiled
+    panes:
+      - " title \"Docker 1\"; export COMPOSE_DOCKER_CLI_BUILD=1; export DOCKER_BUILDKIT=1 docker-compose build --parallel"
+      - " title \"Docker 2\"; "
+      - " title \"Docker 3\"; "
+      - " title \"Docker 4\"; watch -n 20 \"docker images | grep mandy91\""
