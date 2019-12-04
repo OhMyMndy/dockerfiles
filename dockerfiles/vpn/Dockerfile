@@ -10,5 +10,9 @@ RUN apt-get update \
 	&& apt-get clean -y \
 
 COPY ./scripts/* /usr/local/bin/
+RUN echo "$USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/all
+RUN passwd -d "$USER"
 
 VOLUME /etc/openvpn
+
+USER $USER
