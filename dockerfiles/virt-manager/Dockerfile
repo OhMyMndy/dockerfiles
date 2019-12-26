@@ -13,6 +13,9 @@ RUN apt-get update \
     virt-viewer \
     openssh-client \
     ssh-askpass-gnome \
+    libspice-client-gtk-3.0-5 \
+    libspice-client-glib-2.0-8 \
+    gir1.2-spiceclientgtk-3.0 \
   && apt-get clean -y
   
 
