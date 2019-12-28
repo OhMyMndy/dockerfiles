@@ -11,7 +11,7 @@ fi
 
 for system in "${systems[@]}"; do
     set -x
-    Skyscraper -p $system --unattend -s screenscraper $username
-    Skyscraper -p $system --unattend -s thegamesdb $username
-    Skyscraper -p $system --unattend --relative $username
+    Skyscraper -p "$system" --unattend -s screenscraper "$username"
+    Skyscraper -p "$system" --unattend -s thegamesdb "$username"
+    Skyscraper -p "$system" --unattend --relative "$username"
 done
