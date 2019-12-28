@@ -18,7 +18,7 @@ jobs:
             sudo chmod 777 -R /tmp
 
       - checkout
-      - setup_remote_docker
+      # - setup_remote_docker
       # docker_layer_caching: true # not available on my plan
 
       - run:
