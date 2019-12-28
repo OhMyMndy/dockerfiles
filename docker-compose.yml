@@ -52,6 +52,7 @@ services:
     privileged: true
     volumes:
       - ./etc/openvpn:/etc/openvpn
+      - ssh_config:/home/mandy/.ssh
     entrypoint: sleep infinity
 
   firefox:
@@ -84,7 +85,7 @@ services:
     build:
       context: ./dockerfiles/virt-manager
     volumes:
-      - ssh_config:/home/virt-manager/.ssh
+      - ssh_config:/home/mandy/.ssh
       - $HOME/Downloads:/home/mandy/Downloads
     devices:
       - /dev/dri
