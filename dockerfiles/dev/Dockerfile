@@ -53,5 +53,23 @@ RUN npm install -g bats
 RUN npm install -g json
 
 
+# Add go dev things
+USER root
+
+RUN wget https://dl.google.com/go/go1.13.5.linux-amd64.tar.gz \
+	&& tar -xvf go1.13.5.linux-amd64.tar.gz \
+	&& mv go /usr/local
+
+ENV GOPATH /go
+ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y pandoc \
+	&& apt-get clean -y
+
+RUN go get github.com/mrtazz/checkmake \
+	&& cd $GOPATH/src/github.com/mrtazz/checkmake \
+	&& make
+
+
 
 ENTRYPOINT [ "/bin/bash", "-c", "code && while pgrep code &>/dev/null; do sleep 10; done" ]

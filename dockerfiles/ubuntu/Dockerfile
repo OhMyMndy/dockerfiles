@@ -12,7 +12,7 @@ ENV PATH=$PATH:$HOME/.local/bin
 
 WORKDIR $HOME
 
-RUN useradd --create-home --home-dir $HOME "$USER" \
+RUN useradd --create-home --home-dir "$HOME" "$USER" \
 	&& mkdir -p "$HOME"/{.ssh,.config,.local/share} \
 	&& chown -R "$USER":"$USER" "$HOME" \
 	&& usermod -a -G audio,video,root,sudo "$USER"

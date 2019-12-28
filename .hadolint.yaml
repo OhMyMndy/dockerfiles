@@ -1,4 +1,5 @@
 ignored:
+  - DL3004 # no sudo
   - DL3007
   - DL3008
   # Remove apt lists

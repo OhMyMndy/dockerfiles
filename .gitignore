@@ -9,3 +9,5 @@ etc/mednafen
 etc/retroarch
 .history
 *.mxt3
+.env
+*.local.mk

@@ -14,12 +14,19 @@ RUN apt-get update \
   && apt-get clean -y
 
 
-RUN usermod -aG audio,video,root,input "$USER" \
+RUN usermod -aG audio,video,root,input,plugdev "$USER" \
   && mkdir -p "$HOME/.config/retroarch" \
   && chown -R "$USER":"$USER" "$HOME" 
+
+RUN usermod -aG plugdev,input "$USER" 
+RUN echo "$USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/all
+RUN passwd -d "$USER"
+COPY ./entrypoint.sh /entrypoint
+
 
 USER $USER
 
 VOLUME $USER/.config/retroarch
 
-ENTRYPOINT [ "retroarch" ]
+ENTRYPOINT [ "/entrypoint" ]
+CMD [ "retroarch" ]
