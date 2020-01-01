@@ -103,6 +103,20 @@ services:
       - /dev/dri
     network_mode: service:vpn
 
+  nomachine:
+    extends: ubuntu19.10
+    image: mandy91/nomachine:${DOCKER_IMAGE_VERSION}
+    build:
+      context: ./dockerfiles/nomachine
+    volumes:
+      - ssh_config:/home/mandy/.ssh
+      - $HOME/Downloads:/home/mandy/Downloads
+      - ./storage/nomachine-configs:/home/mandy/.nx
+      - ./storage/nomachine:/home/mandy/NoMachine
+    devices:
+      - /dev/dri
+    network_mode: service:vpn
+
   vim:
     extends: ubuntu19.10
     volumes:
