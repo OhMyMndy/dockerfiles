@@ -1,7 +1,7 @@
 .vscode
 etc/openvpn/*
 etc/jupyter
-storage/*
+storage/*/*
 !.keep
 commands.txt
 

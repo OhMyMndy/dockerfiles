@@ -1,14 +1,16 @@
-ARG DOCKER_IMAGE_VERSION
-FROM mandy91/dev:$DOCKER_IMAGE_VERSION
+ARG UBUNTU19_10
+FROM mandy91/ubuntu:$UBUNTU19_10
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
 USER root
 
-RUN curl -L -o /tmp/vscode.deb https://go.microsoft.com/fwlink/?LinkID=760868 \
+RUN curl -LsS -o /tmp/vscode.deb https://go.microsoft.com/fwlink/?LinkID=760868 \
 	&& dpkg -i /tmp/vscode.deb \
-	; DEBIAN_FRONTEND=noninteractive apt-get install -y -f --no-install-recommends \
-	&& rm /tmp/vscode.deb
+	; apt update -y \
+	&& DEBIAN_FRONTEND=noninteractive apt-get install -y -f --no-install-recommends \
+	&& rm /tmp/vscode.deb \
+	&& rm -rf /tmp*
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
 	gpg-agent \

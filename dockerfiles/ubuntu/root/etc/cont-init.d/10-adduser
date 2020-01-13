@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv bash
+
+# @see https://raw.githubusercontent.com/linuxserver/docker-baseimage-alpine/master/root/etc/cont-init.d/10-adduser
+
+PUID=${PUID:-1000}
+PGID=${PGID:-1000}
+
+groupmod -o -g "$PGID" $USER
+usermod -o -u "$PUID" $USER
+
+chown $USER:$USER -R $HOME

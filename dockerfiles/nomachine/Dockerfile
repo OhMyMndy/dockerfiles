@@ -11,6 +11,7 @@ RUN apt-get update \
     fonts-noto \
     fonts-lato \
     xdg-utils \
+    libpulse0 \
   && apt-get clean -y
 
 RUN apt-get update \
@@ -20,10 +21,14 @@ RUN apt-get update \
   && rm /tmp/nomachine.deb
   
 
+COPY root/ /
+
 USER $USER
-RUN mkdir $HOME/.nx
-RUN mkdir $HOME/NoMachine
+RUN mkdir "$HOME/.nx"
+RUN mkdir "$HOME/NoMachine"
 VOLUME $HOME/.nx
 VOLUME $HOME/NoMachine
 
-ENTRYPOINT [ "/usr/NX/bin/nxplayer" ]
+USER root
+
+ENTRYPOINT "/init"  s6-setuidgid $USER /usr/NX/bin/nxplayer

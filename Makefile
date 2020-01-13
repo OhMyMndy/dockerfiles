@@ -39,6 +39,9 @@ firefox: xhost
 vlc: xhost
 	docker-compose run --rm $(dargs) vlc $(args)
 
+filezilla: xhost
+	docker-compose run --rm $(dargs) filezilla $(args)
+
 dosbox: xhost
 	docker-compose run --rm $(dargs) dosbox $(args)
 

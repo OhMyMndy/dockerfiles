@@ -4,6 +4,7 @@ x-default: &default
   init: true
   environment:
     - DISPLAY
+    - SSH_AUTH_SOCK
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix
     - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
@@ -12,6 +13,7 @@ x-default: &default
     - $HOME/.config/fontconfig:/home/mandy/.config/fontconfig
     - /etc/timezone:/etc/timezone:ro
     - /etc/localtime:/etc/localtime:ro
+    - ./dockerfiles/ubuntu/root/etc/cron.d:/etc/cron.d:ro
     - /dev/shm:/dev/shm
     - /etc/machine-id:/etc/machine-id:ro
   env_file: .env
@@ -132,7 +134,7 @@ services:
       context: ./dockerfiles/filezilla
     image: mandy91/filezilla:${DOCKER_IMAGE_VERSION}
     volumes:
-      - filezilla:/home/mandy/
+      - ./storage/filezilla:/home/mandy/.config/filezilla
       - ssh_config:/home/mandy/.ssh
       - $HOME/Downloads:/home/mandy/Downloads
     network_mode: service:vpn
@@ -331,7 +333,6 @@ services:
 
 volumes:
   mozilla:
-  filezilla:
   chrome:
   vlc:
   ssh_config:
