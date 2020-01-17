@@ -2,6 +2,7 @@
 etc/openvpn/*
 etc/jupyter
 storage/*/*
+etc/ssl/certificates/*
 !.keep
 commands.txt
 

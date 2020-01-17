@@ -1,12 +1,34 @@
-FROM jess/firefox:latest
+ARG UBUNTU19_10
+FROM mandy91/ubuntu:$UBUNTU19_10
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
-RUN groupadd -r firefox -g 1000 \
-    && useradd -m -u 1000 -r -m -g firefox -G audio,video firefox \
-    && mkdir -p /home/firefox/{Downloads,.mozilla,.ssh} \
-    && chown -R firefox:firefox /home/firefox
 
-USER firefox
+RUN mkdir -p $HOME/{Downloads,.mozilla,.ssh} \
+    && chown -R $USER:$USER $HOME
 
-VOLUME /home/firefox/.mozilla
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+	apulse \
+	ffmpeg \
+	firefox \
+	hicolor-icon-theme \
+	libasound2 \
+	libgl1-mesa-dri \
+	libgl1-mesa-glx \
+	libpulse0 \
+    firefox \
+    fonts-noto-color-emoji fonts-noto fonts-roboto \
+	&& apt-get clean -y
+
+RUN echo 'pref("browser.tabs.remote.autostart", false);' >> /etc/firefox/syspref.js
+RUN echo 'pref("security.enterprise_roots.enabled", true);' >> /etc/firefox/syspref.js
+
+
+USER $USER
+
+VOLUME $USER/.mozilla
+
+USER root
+
+COPY root/ /
+CMD s6-setuidgid $USER firefox

@@ -14,7 +14,6 @@ ENV PATH=$PATH:$HOME/.local/bin
 ARG OVERLAY_VERSION="v1.22.1.0"
 ARG OVERLAY_ARCH="amd64"
 
-WORKDIR $HOME
 
 ADD https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz /tmp/
 
@@ -29,10 +28,12 @@ RUN useradd --create-home --home-dir "$HOME" "$USER" \
 
 
 VOLUME $HOME/.ssh
+WORKDIR $HOME
 
 RUN apt-get update \
 	&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y curl ca-certificates readline-common sudo \
-	&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y iproute2 wget less file software-properties-common vim git openssh-client ssh-askpass htop cron cronic \
+	&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y iproute2 wget less file software-properties-common vim git openssh-client ssh-askpass htop cron cronic iputils-ping traceroute\
+	&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y ca-certificates libnss3-tools \
 	&& apt-get clean -y \
 	&& rm -rf /tmp/*
 

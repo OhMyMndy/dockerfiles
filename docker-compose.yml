@@ -16,6 +16,7 @@ x-default: &default
     - ./dockerfiles/ubuntu/root/etc/cron.d:/etc/cron.d:ro
     - /dev/shm:/dev/shm
     - /etc/machine-id:/etc/machine-id:ro
+    - ./etc/ssl/certificates:/etc/ssl/certificates:ro
   env_file: .env
 
 services:
@@ -75,8 +76,8 @@ services:
       context: ./dockerfiles/firefox
     image: mandy91/firefox:${DOCKER_IMAGE_VERSION}
     volumes:
-      - mozilla:/home/firefox/.mozilla
-      - $HOME/Downloads:/home/firefox/Downloads
+      - ./storage/firefox:/home/mandy/.mozilla
+      - $HOME/Downloads:/home/mandy/Downloads
     network_mode: service:vpn
 
 
@@ -85,10 +86,12 @@ services:
     build: ./dockerfiles/chrome
     image: mandy91/chrome:${DOCKER_IMAGE_VERSION}
     volumes:
-      - chrome:/data
+      - ./storage/chrome:/data
       - $HOME/Downloads:/home/mandy/Downloads
     security_opt:
       - seccomp="./seccomp/chrome.json"
+    devices:
+      - /dev/dri
     network_mode: service:vpn
 
   # Make sure to generate a SSH key first and ssh-copy-id to the server you want to connect to
@@ -332,8 +335,6 @@ services:
     entrypoint: polybar
 
 volumes:
-  mozilla:
-  chrome:
   vlc:
   ssh_config:
   mobaxterm_wine:
