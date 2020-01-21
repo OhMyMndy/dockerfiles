@@ -1,3 +1,21 @@
+#!/usr/bin/env bash
+
+set -o errexit -o nounset -o pipefail
+
+INPUT_GROUP_ID="$(cut -d: -f3 < <(getent group input))"
+PLUGDEV_GROUP_ID="$(cut -d: -f3 < <(getent group plugdev))"
+
+user=mandy
+
+environment="- PUID=$(id -u)
+    - PGID=$(id -g)
+    - INPUT_GROUP_ID=${INPUT_GROUP_ID}
+    - PLUGDEV_GROUP_ID=${PLUGDEV_GROUP_ID}"
+
+DOCKER_IMAGE_VERSION=0.1
+
+
+cat <<EOF
 version: '2.3'
 
 x-default: &default
@@ -5,6 +23,7 @@ x-default: &default
   environment:
     - DISPLAY
     - SSH_AUTH_SOCK
+    $environment
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix
     - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
@@ -20,17 +39,16 @@ x-default: &default
   env_file: .env
 
 services:
-
   ubuntu19.10:
     <<: *default
     build:
       context: ./dockerfiles/ubuntu
       args:
-        - DOCKER_IMAGE_VERSION=0.1
+        - DOCKER_IMAGE_VERSION=${DOCKER_IMAGE_VERSION}
         - UBUNTU19_10=0.1-19.10
         - UBUNTU18_04=0.1-18.04
         - VERSION=19.10
-        - USER=mandy
+        - USER=${user}
     image: mandy91/ubuntu:${DOCKER_IMAGE_VERSION}-19.10
 
   ubuntu18.04:
@@ -46,8 +64,8 @@ services:
     build:
       context: ./dockerfiles/archlinux
       args:
-        - DOCKER_IMAGE_VERSION=0.1
-        - USER=mandy
+        - DOCKER_IMAGE_VERSION=${DOCKER_IMAGE_VERSION}
+        - USER=${user}
     environment:
       - DISPLAY=unix$DISPLAY
     image: mandy91/archlinux:${DOCKER_IMAGE_VERSION}
@@ -344,3 +362,4 @@ volumes:
   retroarch:
   retropie-skyscraper:
   retropie-emulationstation:
+EOF
