@@ -10,7 +10,7 @@ if [[ -n $USER ]] && [[ -n $HOME ]]; then
 	groupmod -o -g "$PGID" "$USER"
 	usermod -o -u "$PUID" "$USER"
 
-	chown "$USER:$USER" -R "$HOME"
+	# chown "$USER:$USER" -R "$HOME"
 fi
 
 if [[ -n $DOCKER_GID ]] && [[ -n $USER ]]; then

@@ -17,10 +17,10 @@ test:
 	circleci build
 
 build:
-	docker-compose build $(service)
+	docker-compose-wrapper build $(service)
 
 push:
-	docker-compose push $(service)
+	docker-compose-wrapper push $(service)
 
 xhost:
 	xhost + local:docker
@@ -28,29 +28,34 @@ xhost:
 
 # Services
 run: xhost
-	docker-compose run --rm $(dargs) $(service) $(args)
+	docker-compose-wrapper run --rm $(dargs) $(service) $(args)
 
 chrome: xhost
-	docker-compose run --rm $(dargs) chrome $(args)
+	docker-compose-wrapper run --rm $(dargs) chrome $(args)
 
 firefox: xhost
-	docker-compose run --rm $(dargs) firefox $(args)
+	docker-compose-wrapper run --rm $(dargs) firefox $(args)
 
 vlc: xhost
-	docker-compose run --rm $(dargs) vlc $(args)
+	docker-compose-wrapper run --rm $(dargs) vlc $(args)
 
+vscode: xhost
+	docker-compose-wrapper run --rm $(dargs) vscode $(args)
 filezilla: xhost
-	docker-compose run --rm $(dargs) filezilla $(args)
+	docker-compose-wrapper run --rm $(dargs) filezilla $(args)
 
 dosbox: xhost
-	docker-compose run --rm $(dargs) dosbox $(args)
+	docker-compose-wrapper run --rm $(dargs) dosbox $(args)
 
 lutris: xhost
-	docker-compose run --rm $(dargs) lutris $(args)
+	docker-compose-wrapper run --rm $(dargs) lutris $(args)
 
 retropie: xhost
-	docker-compose run --rm $(dargs) retropie $(args)
+	docker-compose-wrapper run --rm $(dargs) retropie $(args)
 
+
+spacefm: xhost
+	docker-compose-wrapper run --rm $(dargs) spacefm $(args)
 # Dev
 
 dev-checkmake:

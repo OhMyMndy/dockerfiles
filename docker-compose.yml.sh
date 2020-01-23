@@ -28,14 +28,17 @@ x-default: &default
     - /tmp/.X11-unix:/tmp/.X11-unix
     - /run/user/${UID:-1000}/pulse:/run/user/1000/pulse
     - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
-    - $HOME/.config/fontconfig:/root/.config/fontconfig
-    - $HOME/.config/fontconfig:/home/mandy/.config/fontconfig
+    - $HOME/.config/fontconfig:/root/.config/fontconfig:ro
+    - $HOME/.config/fontconfig:/home/mandy/.config/fontconfig:ro
     - /etc/timezone:/etc/timezone:ro
     - /etc/localtime:/etc/localtime:ro
     - ./dockerfiles/ubuntu/root/etc/cron.d:/etc/cron.d:ro
     - /dev/shm:/dev/shm
     - /etc/machine-id:/etc/machine-id:ro
     - ./etc/ssl/certificates:/etc/ssl/certificates:ro
+    #- /usr/share/fonts:/usr/share/fonts:ro
+    #- /usr/share/fontconfig:/usr/share/fontconfig:ro
+    - $HOME/.local/share/fonts:/home/mandy/.local/share/fonts:ro
   env_file: .env
 
 services:
@@ -58,6 +61,12 @@ services:
       args:
         - VERSION=18.04
     image: mandy91/ubuntu:${DOCKER_IMAGE_VERSION}-18.04
+
+  ubuntu19.10-gui:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/ubuntu-gui
+    image: mandy91/ubuntu-gui:${DOCKER_IMAGE_VERSION}-19.10
 
   archlinux:
     <<: *default
@@ -314,12 +323,22 @@ services:
       - $PWD:$PWD
 
   vscode:
-    extends: ubuntu19.10
+    extends: ubuntu19.10-gui
     build:
       context: ./dockerfiles/vscode
     image: mandy91/vscode:${DOCKER_IMAGE_VERSION}
     volumes:
-      - $PWD:$PWD
+      # - $PWD:$PWD
+      - ./storage/vscode:/home/mandy/.config/Code
+
+  spacefm:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/spacefm
+    image: mandy91/spacefm:${DOCKER_IMAGE_VERSION}
+    #volumes:
+      #- $HOME/.config:$HOME/.config:ro
+      #- /usr/share/themes/:/usr/share/themes/:ro
 
   retropie:
     extends: ubuntu19.10
