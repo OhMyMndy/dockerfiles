@@ -1,0 +1,19 @@
+Vagrant.require_version ">= 1.6.0"
+
+
+$script = <<-SCRIPT
+sudo yum install -y docker
+sudo systemctl start docker
+sudo systemctl enable docker
+
+sudo groupadd docker
+sudo chown root:docker /var/run/docker.sock
+sudo usermod -aG docker vagrant
+
+echo Provisioning done
+SCRIPT
+
+Vagrant.configure("2") do |config|
+    config.vm.provision "shell", inline: $script
+    config.vm.box = "centos/7"
+end

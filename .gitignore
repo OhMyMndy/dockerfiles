@@ -12,3 +12,4 @@ etc/retroarch
 *.mxt3
 .env
 *.local.mk
+.vagrant

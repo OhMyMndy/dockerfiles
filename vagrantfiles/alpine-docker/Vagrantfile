@@ -1,0 +1,15 @@
+Vagrant.require_version ">= 1.6.0"
+
+
+$script = <<-SCRIPT
+apk update
+apk add docker # or docker-cli
+sudo service docker start
+sudo addgroup vagrant docker
+echo Provisioning done
+SCRIPT
+
+Vagrant.configure("2") do |config|
+    config.vm.provision "shell", inline: $script
+    config.vm.box = "generic/alpine38"
+end
