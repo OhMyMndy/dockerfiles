@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+
+apt update
+
+
+DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y software-properties-common
+
+$(command -v add-apt-repository)  $@
+
+DEBIAN_FRONTEND=noninteractive apt-get remove software-properties-common -y
+
+rm -rf /tmp/*

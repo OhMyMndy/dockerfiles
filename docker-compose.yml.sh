@@ -30,13 +30,17 @@ x-default: &default
     - ./etc/pulse/pulse-client.conf:/etc/pulse/client.conf:ro
     - $HOME/.config/fontconfig:/root/.config/fontconfig:ro
     - $HOME/.config/fontconfig:/home/mandy/.config/fontconfig:ro
+    - $HOME/.config/gtk-2.0:/home/mandy/.config/gtk-2.0:ro
+    - $HOME/.config/gtk-3.0:/home/mandy/.config/gtk-3.0:ro
     - /etc/timezone:/etc/timezone:ro
     - /etc/localtime:/etc/localtime:ro
     - ./dockerfiles/ubuntu/root/etc/cron.d:/etc/cron.d:ro
     - /dev/shm:/dev/shm
     - /etc/machine-id:/etc/machine-id:ro
     - ./etc/ssl/certificates:/etc/ssl/certificates:ro
-    #- /usr/share/fonts:/usr/share/fonts:ro
+    - /usr/share/fonts:/usr/share/fonts:ro
+    - /usr/share/themes:/usr/share/themes:ro
+    - /usr/share/icons:/usr/share/icons:ro
     #- /usr/share/fontconfig:/usr/share/fontconfig:ro
     - $HOME/.local/share/fonts:/home/mandy/.local/share/fonts:ro
   env_file: .env
@@ -67,6 +71,13 @@ services:
     build:
       context: ./dockerfiles/ubuntu-gui
     image: mandy91/ubuntu-gui:${DOCKER_IMAGE_VERSION}-19.10
+
+  alpine:
+    extends: ubuntu19.10
+    build:
+      context: ./dockerfiles/alpine
+    image: mandy91/alpine:${DOCKER_IMAGE_VERSION}-19.10
+
 
   archlinux:
     <<: *default
@@ -332,13 +343,23 @@ services:
       - ./storage/vscode:/home/mandy/.config/Code
 
   spacefm:
-    extends: ubuntu19.10
+    extends: ubuntu19.10-gui
     build:
       context: ./dockerfiles/spacefm
     image: mandy91/spacefm:${DOCKER_IMAGE_VERSION}
     #volumes:
       #- $HOME/.config:$HOME/.config:ro
       #- /usr/share/themes/:/usr/share/themes/:ro
+
+  shutter:
+    extends: ubuntu19.10-gui
+    build:
+      context: ./dockerfiles/shutter
+    image: mandy91/shutter:${DOCKER_IMAGE_VERSION}
+    volumes:
+      - ./storage/shutter:$HOME/.shutter
+      #- /usr/share/themes/:/usr/share/themes/:ro
+
 
   retropie:
     extends: ubuntu19.10

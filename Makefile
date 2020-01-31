@@ -56,6 +56,13 @@ retropie: xhost
 
 spacefm: xhost
 	docker-compose-wrapper run --rm $(dargs) spacefm $(args)
+
+
+squid-cache: xhost
+	docker-compose-wrapper run --rm $(dargs) squid-cache
+
+shutter: xhost
+	docker-compose-wrapper run --rm $(dargs) shutter $(args)
 # Dev
 
 dev-checkmake:

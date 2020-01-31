@@ -20,6 +20,8 @@ ADD https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VE
 RUN tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C / --exclude="./bin" && \
     tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C /usr ./bin
 
+COPY root/ /
+COPY bin/* /bin
 
 RUN useradd --create-home --home-dir "$HOME" "$USER" \
 	&& mkdir -p "$HOME"/{.ssh,.config,.local/share} \
@@ -30,13 +32,21 @@ RUN useradd --create-home --home-dir "$HOME" "$USER" \
 VOLUME $HOME/.ssh
 WORKDIR $HOME
 
+
+#  ca-certificates libnss3-tools
 RUN apt-get update \
-	&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y curl ca-certificates readline-common sudo \
-	&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y iproute2 wget less file software-properties-common vim git openssh-client ssh-askpass htop cron cronic iputils-ping traceroute\
-	&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y ca-certificates libnss3-tools \
+	&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y readline-common sudo less file cron vim-tiny iputils-ping \
 	&& apt-get clean -y \
 	&& rm -rf /tmp/*
 
 
-COPY root/ /
+# RUN apt-get update \
+# 	&& add-apt-repository ppa:git-core/ppa \
+# 	&& apt-get update \
+# 	&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends git -y \
+# 	&& apt-get clean -y \
+# 	&& rm -rf /tmp/*
+
+
+
 ENTRYPOINT ["/init"]
