@@ -1,16 +1,18 @@
 #!/usr/bin/with-contenv bash
 
-cp /etc/ssl/certificates/* /usr/local/share/ca-certificates/
-# if [[ -d /usr/lib64/mozilla/certificates ]]; then
-#     cp /etc/ssl/certificates/* /usr/lib64/mozilla/certificates 
-# fi
+if command -v certutil &>/dev/null; then
+    cp /etc/ssl/certificates/* /usr/local/share/ca-certificates/
+    # if [[ -d /usr/lib64/mozilla/certificates ]]; then
+    #     cp /etc/ssl/certificates/* /usr/lib64/mozilla/certificates 
+    # fi
 
-mkdir -p "$HOME/.pki/nssdb"
+    mkdir -p "$HOME/.pki/nssdb"
 
-find /usr/local/share/ca-certificates -print0 -name "*.crt"  | while read -d $'\0' file
-do
-    certName="$(basename "${file}")";
-    certutil -A -n "$certName" -t "TCu,Cu,Tu" -i "$file" -d "sql:$HOME/.pki/nssdb"
-done
+    find /usr/local/share/ca-certificates -print0 -name "*.crt"  | while read -d $'\0' file
+    do
+        certName="$(basename "${file}")";
+        certutil -A -n "$certName" -t "TCu,Cu,Tu" -i "$file" -d "sql:$HOME/.pki/nssdb"
+    done
 
-update-ca-certificates --fresh
+    update-ca-certificates --fresh
+fi
