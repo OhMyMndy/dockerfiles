@@ -131,6 +131,7 @@ services:
     volumes:
       - ssh_config:/home/mandy/.ssh
       - $HOME/Downloads:/home/mandy/Downloads
+      - ./storage/virt-manager:/home/mandy/.config/dconf
     devices:
       - /dev/dri
     network_mode: service:vpn
@@ -336,6 +337,15 @@ services:
     build:
       context: ./dockerfiles/spacefm
     image: mandy91/spacefm:${DOCKER_IMAGE_VERSION}
+    #volumes:
+      #- $HOME/.config:$HOME/.config:ro
+      #- /usr/share/themes/:/usr/share/themes/:ro
+
+  quicktile:
+    extends: ubuntu18.04
+    build:
+      context: ./dockerfiles/quicktile
+    image: mandy91/quicktile:${DOCKER_IMAGE_VERSION}
     #volumes:
       #- $HOME/.config:$HOME/.config:ro
       #- /usr/share/themes/:/usr/share/themes/:ro

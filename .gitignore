@@ -13,3 +13,4 @@ etc/retroarch
 .env
 *.local.mk
 .vagrant
+tmp.*
