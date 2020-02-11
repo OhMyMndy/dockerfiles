@@ -59,7 +59,7 @@ spacefm: xhost
 
 
 squid-cache: xhost
-	docker-compose-wrapper run --rm $(dargs) squid-cache
+	docker-compose-wrapper run --rm $(dargs) squid-cache $(args)
 
 shutter: xhost
 	docker-compose-wrapper run --rm $(dargs) shutter $(args)

@@ -12,7 +12,7 @@ RUN apt-get update \
   && rm -rf /tmp/*
 
 USER "$USER"
-RUN mkdir -p ~/.shutter
+RUN mkdir -p ~/{.shutter,Pictures}
 
 VOLUME [ "$HOME/.shutter" ]
 

@@ -368,6 +368,7 @@ services:
     image: mandy91/shutter:${DOCKER_IMAGE_VERSION}
     volumes:
       - ./storage/shutter:$HOME/.shutter
+      - $HOME/Pictures:$HOME/Pictures
       #- /usr/share/themes/:/usr/share/themes/:ro
 
 
