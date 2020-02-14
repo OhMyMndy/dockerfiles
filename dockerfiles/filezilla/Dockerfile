@@ -1,13 +1,9 @@
 ARG UBUNTU19_10
-FROM mandy91/ubuntu:$UBUNTU19_10
+FROM mandy91/ubuntu-x11-hw:$UBUNTU19_10
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
-USER root
-RUN apt-get update \
-	&& DEBIAN_FRONTEND=noninteractive \
-	apt-get install -y --no-install-recommends filezilla \
-	&& apt-get clean
+RUN install-package --no-install-recommends filezilla
 	
-USER $USER
-ENTRYPOINT [ "filezilla" ]
+
+CMD s6-setuidgid $USER filezilla

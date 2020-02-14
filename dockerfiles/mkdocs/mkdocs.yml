@@ -1,0 +1,25 @@
+site_name: Mandy91
+
+theme:
+  name: 'material'
+
+plugins:
+  - search
+  - toc-sidebar
+  - awesome-pages
+  - tags
+  # - macros
+  - mkdocs-jupyter
+  # - markdownextradata: {}
+
+
+markdown_extensions:
+  - toc
+  - tables
+  - meta
+  - footnotes
+  - admonition
+  - codehilite:
+      linenums: true
+
+

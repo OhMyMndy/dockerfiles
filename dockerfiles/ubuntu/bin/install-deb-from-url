@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+
+url="$@"
+tmp="$(mktemp)"
+curl -LsS "$url" -o "$tmp"
+dpkg -i "$tmp"
+apt-get update -qq
+DEBIAN_FRONTEND=noninteractive apt-get install -f -y -qq --no-install-recommends
+rm -rf /tmp/*

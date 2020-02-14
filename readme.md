@@ -14,7 +14,7 @@ teamocil dockerfiles
 ## Building
 
 Dependent images first
-`docker-compose build ubuntu19.10 ubuntu18.04 ubuntu-gaming wine`
+`docker-compose build ubuntu19.10 ubuntu18.04 ubuntu19.10-x11 ubuntu19.10-x11-hw wine`
 All images
 `docker-compose build`
 

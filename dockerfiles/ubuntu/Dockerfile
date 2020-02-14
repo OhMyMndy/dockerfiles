@@ -14,16 +14,16 @@ ENV PATH=$PATH:$HOME/.local/bin
 ARG OVERLAY_VERSION="v1.22.1.0"
 ARG OVERLAY_ARCH="amd64"
 
-
 ADD https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz /tmp/
 
 RUN tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C / --exclude="./bin" && \
     tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C /usr ./bin
 
 COPY root/ /
-COPY bin/* /bin
+COPY bin/* /bin/
 
-RUN useradd --create-home --home-dir "$HOME" "$USER" \
+RUN groupadd -g 1000 "$USER" \
+	&& useradd --create-home -u 1000 -g 1000 -s /bin/bash --home-dir "$HOME" "$USER" \
 	&& mkdir -p "$HOME"/{.ssh,.config,.local/share} \
 	&& chown -R "$USER":"$USER" "$HOME" \
 	&& usermod -a -G audio,video,root,sudo "$USER"
@@ -33,12 +33,7 @@ VOLUME $HOME/.ssh
 WORKDIR $HOME
 
 
-#  ca-certificates libnss3-tools
-RUN apt-get update \
-	&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y readline-common sudo less file cron vim-tiny iputils-ping \
-	&& apt-get clean -y \
-	&& rm -rf /tmp/*
-
+RUN install-package --no-install-recommends readline-common sudo less file cron vim-tiny iputils-ping
 
 # RUN apt-get update \
 # 	&& add-apt-repository ppa:git-core/ppa \
@@ -46,7 +41,6 @@ RUN apt-get update \
 # 	&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends git -y \
 # 	&& apt-get clean -y \
 # 	&& rm -rf /tmp/*
-
 
 
 ENTRYPOINT ["/init"]

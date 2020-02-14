@@ -1,12 +1,10 @@
-ARG UBUNTU19_10
-FROM mandy91/ubuntu:$UBUNTU19_10
+ARG VERSION
+ARG DOCKER_IMAGE_VERSION
+FROM mandy91/ubuntu-x11:${DOCKER_IMAGE_VERSION}-$VERSION
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
-USER root
-
-# Install Chrome
-RUN apt-get update && apt-get install -y \
+RUN install-package \
 	hicolor-icon-theme \
 	adwaita-qt \
 	adwaita-icon-theme \
@@ -16,9 +14,16 @@ RUN apt-get update && apt-get install -y \
 	libgl1-mesa-glx \
 	libpango1.0-0 \
 	libv4l-0 \
-	fonts-symbola \
-	--no-install-recommends \
-	&& rm -rf /var/lib/apt/lists/*
-
+	libpulse0 \
+	libasound2 \
+	apulse \
+	fonts-noto-color-emoji \
+	fonts-noto \
+	fonts-lato \
+	dbus-x11 \
+	dbus \
+	dconf \
+	gtk2-engines-pixbuf \
+	--no-install-recommends
 
 COPY root/ /

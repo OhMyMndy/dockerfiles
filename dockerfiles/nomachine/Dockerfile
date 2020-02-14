@@ -1,17 +1,16 @@
 ARG UBUNTU19_10
-FROM mandy91/ubuntu:$UBUNTU19_10
+FROM mandy91/ubuntu-x11:$UBUNTU19_10
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
 USER root
 
-RUN apt-get update \
-  && DEBIAN_FRONTEND=noninteractive \
-  apt-get install -y --no-install-recommends \
+RUN install-package --no-install-recommends \
     fonts-noto \
     fonts-lato \
     xdg-utils \
     libpulse0 \
+    curl \
   && apt-get clean -y
 
 RUN apt-get update \
@@ -31,4 +30,4 @@ VOLUME $HOME/NoMachine
 
 USER root
 
-ENTRYPOINT "/init"  s6-setuidgid $USER /usr/NX/bin/nxplayer
+CMD s6-setuidgid $USER /usr/NX/bin/nxplayer

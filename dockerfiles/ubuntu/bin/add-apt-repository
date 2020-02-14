@@ -1,13 +1,13 @@
 #!/usr/bin/bash
 
-apt update
+apt update -qq
 
 
-DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y software-properties-common
+DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y -qq software-properties-common
 
 # shellcheck disable=2068
 $(command -v add-apt-repository)  $@
 
-DEBIAN_FRONTEND=noninteractive apt-get remove software-properties-common -y
+DEBIAN_FRONTEND=noninteractive apt-get remove software-properties-common -y -qq
 
 rm -rf /tmp/*

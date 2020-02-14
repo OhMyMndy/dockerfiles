@@ -4,8 +4,6 @@ LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
 USER root
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends fonts-lato vinagre \
-  && apt-get clean -y
-USER $USER
+RUN install-package --no-install-recommends vinagre
 
-ENTRYPOINT [ "vinagre" ]
+CMD s6-setuidgid $USER vinagre

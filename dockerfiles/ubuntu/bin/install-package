@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -e
+
+apt-get update -qq
+DEBIAN_FRONTEND=noninteractive apt-get install -y -qq $@
+apt-get clean -y
+rm -rf /tmp/*

@@ -14,3 +14,4 @@ etc/retroarch
 *.local.mk
 .vagrant
 tmp.*
+*.pyc

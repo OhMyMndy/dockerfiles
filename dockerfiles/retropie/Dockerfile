@@ -1,12 +1,10 @@
 ARG DOCKER_IMAGE_VERSION
-FROM mandy91/ubuntu-gaming:$DOCKER_IMAGE_VERSION
+FROM mandy91/ubuntu-x11-hw:$DOCKER_IMAGE_VERSION
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
 USER root
-RUN apt-get update \
-	&& DEBIAN_FRONTEND=noninteractive apt-get install -y git dialog unzip xmlstarlet \
-	&& apt-get clean -y
+RUN install-package git dialog unzip xmlstarlet
 
 
 USER $USER

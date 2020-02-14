@@ -45,4 +45,4 @@ RUN apk add --no-cache sudo less file vim iputils git
 
 
 
-ENTRYPOINT ["/init"]
+ENTRYPOINT [ "/init" ]

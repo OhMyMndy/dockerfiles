@@ -1,14 +1,9 @@
 ARG UBUNTU18_04
-FROM mandy91/ubuntu:$UBUNTU18_04
+FROM mandy91/ubuntu-x11:$UBUNTU18_04
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
-USER root
-
-RUN apt-get update \
-  && DEBIAN_FRONTEND=noninteractive \
-  apt-get install -y python-pip \
-  && apt-get clean -y
+RUN install-package python-pip
 
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive \
@@ -19,4 +14,4 @@ RUN apt-get update \
   
 RUN pip install -q https://github.com/ssokolow/quicktile/archive/master.zip
 
-CMD quicktile --daemonize
+CMD s6-setuidgid $USER quicktile --daemonize

@@ -4,7 +4,7 @@ ifndef VERBOSE
 .IGNORE:
 endif
 
-include Makefile.local.mk
+-include Makefile.local.mk
 
 .PHONY: all
 all:
@@ -16,53 +16,36 @@ clean:
 test:
 	circleci build
 
+
+DOCKER_COMPOSE_BIN = docker-compose-wrapper
+# Services
+DOCKER_RUN_CMD = $(DOCKER_COMPOSE_BIN) run --rm $(dargs) $(1) $(args)
+DOCKER_EXEC_CMD = $(DOCKER_COMPOSE_BIN) exec $(dargs) $(1) $(args)
+DOCKER_BUILD_CMD = $(DOCKER_COMPOSE_BIN) build $(1) $(args)
+
 build:
-	docker-compose-wrapper build $(service)
+	$(DOCKER_COMPOSE_BIN) build $(service)
 
 push:
-	docker-compose-wrapper push $(service)
+	$(DOCKER_COMPOSE_BIN) push $(service)
 
 xhost:
 	xhost + local:docker
 
 
-# Services
-run: xhost
-	docker-compose-wrapper run --rm $(dargs) $(service) $(args)
+build: xhost
+	$(call DOCKER_BUILD_CMD, $(service))
 
-chrome: xhost
-	docker-compose-wrapper run --rm $(dargs) chrome $(args)
 
-firefox: xhost
-	docker-compose-wrapper run --rm $(dargs) firefox $(args)
+run: xhost build
+	$(call DOCKER_RUN_CMD, $(service))
+
+exec: xhost
+	$(call DOCKER_EXEC_CMD, $(service))
 
 vlc: xhost
-	docker-compose-wrapper run --rm $(dargs) vlc $(args)
+	$(call DOCKER_RUN_CMD, vlc)
 
-vscode: xhost
-	docker-compose-wrapper run --rm $(dargs) vscode $(args)
-filezilla: xhost
-	docker-compose-wrapper run --rm $(dargs) filezilla $(args)
-
-dosbox: xhost
-	docker-compose-wrapper run --rm $(dargs) dosbox $(args)
-
-lutris: xhost
-	docker-compose-wrapper run --rm $(dargs) lutris $(args)
-
-retropie: xhost
-	docker-compose-wrapper run --rm $(dargs) retropie $(args)
-
-
-spacefm: xhost
-	docker-compose-wrapper run --rm $(dargs) spacefm $(args)
-
-
-squid-cache: xhost
-	docker-compose-wrapper run --rm $(dargs) squid-cache $(args)
-
-shutter: xhost
-	docker-compose-wrapper run --rm $(dargs) shutter $(args)
 # Dev
 
 dev-checkmake:
