@@ -3,6 +3,7 @@
 set -e
 
 apt-get update -qq
+# shellcheck disable=SC2068
 DEBIAN_FRONTEND=noninteractive apt-get install -y -qq $@
 apt-get clean -y
 rm -rf /tmp/*

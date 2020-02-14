@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-
+# shellcheck disable=SC2124
 url="$@"
 tmp="$(mktemp)"
 curl -LsS "$url" -o "$tmp"
