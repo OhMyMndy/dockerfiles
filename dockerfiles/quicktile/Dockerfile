@@ -9,8 +9,8 @@ RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive \
 	curl -sSL http://ftp.nl.debian.org/debian/pool/main/g/gnome-python-desktop/python-wnck_2.32.0+dfsg-3_amd64.deb >> "/tmp/python-wnck.deb" \
 	&& dpkg -i "/tmp/python-wnck.deb" \
-  ; DEBIAN_FRONTEND=noninteractive apt install -qq -y -f \
-  && rm /tmp/python-wnck.deb
+  ; install-package -f \
+  && rm /tmp/*
   
 RUN pip install -q https://github.com/ssokolow/quicktile/archive/master.zip
 

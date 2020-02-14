@@ -56,8 +56,8 @@ RUN npm install -g json
 # Add go dev things
 USER root
 
-RUN wget https://dl.google.com/go/go1.13.5.linux-amd64.tar.gz \
-	&& tar -xvf go1.13.5.linux-amd64.tar.gz \
+RUN curl -LsS https://dl.google.com/go/go1.13.5.linux-amd64.tar.gz -o go.tgz \
+	&& tar -xvf go.tgz \
 	&& mv go /usr/local
 
 ENV GOPATH /go
@@ -66,6 +66,7 @@ ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y pandoc \
 	&& apt-get clean -y
 
+# hadolint ignore=DL3003
 RUN go get github.com/mrtazz/checkmake \
 	&& cd $GOPATH/src/github.com/mrtazz/checkmake \
 	&& make

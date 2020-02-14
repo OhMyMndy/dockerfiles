@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/ash", "-o", "pipefail", "-c" ]
 

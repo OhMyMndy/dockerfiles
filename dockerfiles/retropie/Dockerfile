@@ -9,7 +9,8 @@ RUN install-package git dialog unzip xmlstarlet
 
 USER $USER
 
-RUN cd $HOME && git clone --depth=1 https://github.com/RetroPie/RetroPie-Setup.git
+WORKDIR $HOME
+RUN git clone --depth=1 https://github.com/RetroPie/RetroPie-Setup.git
 
 USER root
 ENV DEBIAN_FRONTEND=noninteractive

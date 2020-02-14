@@ -1,4 +1,8 @@
 ignored:
+  # last USER should not be root
+  - DL3002
+  # Double quote to prevent globbing and word splitting.
+  - SC2086
   # no sudo
   - DL3004
   - DL3007
@@ -11,6 +15,11 @@ ignored:
   - DL3015
   # npm specify specific version
   - DL3016
+  # Pin versions in apk add. Instead of `apk add <package>` use `apk add <package>=<version>
+  - DL3018
+
+  # Use arguments JSON notation for CMD and ENTRYPOINT arguments
+  - DL3025
 
 trustedRegistries:
   - docker.io

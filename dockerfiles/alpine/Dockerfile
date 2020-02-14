@@ -1,5 +1,5 @@
 
-FROM alpine
+FROM alpine:3
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/ash", "-o", "pipefail", "-c" ]
 
@@ -21,9 +21,7 @@ RUN apk add --no-cache tar
 RUN tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C / --exclude="./bin" && \
     tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C /usr ./bin
 
-# COPY root/ /
-# COPY bin/* /bin
-
+# hadolint ignore=SC2169
 RUN adduser -S -h "$HOME" "$USER" \
 	&& addgroup -S sudo \
 	&& addgroup -S "$USER" \

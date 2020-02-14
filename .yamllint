@@ -3,7 +3,7 @@ extends: default
 rules:
   # 80 chars should be enough, but don't fail if a line is longer
   line-length:
-    max: 130
+    max: 165
     level: warning
     allow-non-breakable-words: true
   document-start: disable

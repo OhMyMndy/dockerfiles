@@ -7,15 +7,33 @@ jobs:
       # - image: circleci/golang:1.12.12-buster
       - image: mandy91/dotfiles-build:0.1
     steps:
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: Set up docker
+          command: |
+            # @see https://stackoverflow.com/questions/45796661/docker-permission-denied-while-trying-to-connect-to-docker-daemon-with-local-ci/45796662#45796662
+            if [[ $CIRCLE_SHELL_ENV == *"localbuild"* ]]; then
+              echo "export s=sudo" >> $BASH_ENV
+              echo "export docker='sudo docker'" >> $BASH_ENV
+            else
+              echo "export s=" >> $BASH_ENV
+              echo "export docker='docker'" >> $BASH_ENV
+            fi
+
       - run:
           name: Verify docker
-          command: docker --version
+          command: $docker --version
+
 
       - run:
           name: Chmod temp folder
           command: |
             # Local circleci needs this
             sudo chmod 777 -R /tmp
+            sudo mkdir -p /home/circleci/project/
+            sudo chmod 777 -R /home/circleci/project/
 
       - checkout
       # - setup_remote_docker
@@ -23,40 +41,13 @@ jobs:
 
       - run:
           name: Shellcheck
-          command: |
-            set +e
-            failed=0
-            for file in $(git ls-files | xargs -r -i bash -c "file \"{}\" | grep -iq Bourne-Again && echo \"{}\"")
-            do
-              if ! shellcheck -x "$file" -P "$(dirname "$file")"; then
-                failed=1
-              fi
-            done
-            exit $failed
+          command: .circleci/shellcheck.sh
 
 
       - run:
           name: Hadolint
-          command: |
-            set +e
-            failed=0
-            for file in $(git ls-files -- 'Dockerfile')
-            do
-              if ! hadolint "$file"; then
-                failed=1
-              fi
-            done
-            exit $failed
+          command: ./.circleci/hadolint.sh
 
       - run:
           name: Yamllint
-          command: |
-            set +e
-            failed=0
-            for file in $(git ls-files -- '*.yaml' '*.yml')
-            do
-              if ! yamllint -s "$file"; then
-                failed=1
-              fi
-            done
-            exit $failed
+          command: ./.circleci/yamllint.sh

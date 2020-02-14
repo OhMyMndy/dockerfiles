@@ -13,6 +13,7 @@ RUN install-package --no-install-recommends \
     curl \
   && apt-get clean -y
 
+# hadolint ignore=SC1001
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive \
 	curl -sSL "$(curl -sSL https://www.nomachine.com/download/download\&id\=6 2>/dev/null | grep -E -o "http.*download.*deb")" >> "/tmp/nomachine.deb" \
