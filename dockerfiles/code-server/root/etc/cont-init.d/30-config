@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+
+
+s6-setuidgid $USER rsync -hrtp /home/coder/.local/share/code-server-host/ /home/coder/.local/share/code-server/

@@ -52,6 +52,9 @@ dev-checkmake:
 	$(MAKE) -C dockerfiles/dev
 
 
+chromium-code-server:
+	chromium-browser --app=http://localhost:8880
+
 # Retropie
 
 retropie-scrape:

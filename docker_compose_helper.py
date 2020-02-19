@@ -22,7 +22,8 @@ def create_service(image_name: str, version: str = None, build_args: dict = None
         "volumes": volumes,
         "environment": environment,
         "ports": [],
-        "init": True
+        "init": True,
+        "restart": 'unless-stopped'
       }
 
   if extends is not None:

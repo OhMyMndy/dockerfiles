@@ -35,10 +35,6 @@ jobs:
             sudo mkdir -p /home/circleci/project/
             sudo chmod 777 -R /home/circleci/project/
 
-      - checkout
-      # - setup_remote_docker
-      # docker_layer_caching: true # not available on my plan
-
       - run:
           name: Shellcheck
           command: .circleci/shellcheck.sh
@@ -46,8 +42,8 @@ jobs:
 
       - run:
           name: Hadolint
-          command: ./.circleci/hadolint.sh
+          command: .circleci/hadolint.sh
 
       - run:
           name: Yamllint
-          command: ./.circleci/yamllint.sh
+          command: .circleci/yamllint.sh

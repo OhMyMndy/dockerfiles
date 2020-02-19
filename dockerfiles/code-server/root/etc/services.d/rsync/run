@@ -1,0 +1,6 @@
+#!/usr/bin/with-contenv bash
+
+while true; do
+    s6-setuidgid $USER rsync -hrtp /home/coder/.local/share/code-server/ /home/coder/.local/share/code-server-host/
+    sleep 3
+done

@@ -159,6 +159,19 @@ bitwarden = create_service(
 bitwarden['network_mode'] = 'service:vpn'
 
 
+nomachine = create_service(
+  image_name='nomachine',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910_x11_hw,
+  volumes={
+    "./storage/ssh": f"{home}/.ssh",
+    f"{home}/Downloads": f"{home}/Downloads",
+    "./storage/nomachine-configs": f"{home}/.nx",
+    "./storage/nomachine": f"{home}/NoMachine"
+  }
+)
+nomachine['network_mode'] = 'service:vpn'
+
 vpn = create_service(
   image_name='vpn',
   version=f'{docker_image_version}',
@@ -174,6 +187,29 @@ alpine = create_service(
   version=f'{docker_image_version}',
   build_args={}
 )
+
+tmux = create_service(
+  image_name='tmux',
+  version=f'{docker_image_version}',
+  extends=alpine
+)
+
+
+# docker-compose-wrapper run -d --service-ports code-server s6-setuidgid coder code-server --host 0.0.0.0 --auth none
+code_server = create_service(
+  image_name='code-server',
+  version=f'{docker_image_version}',
+  extends=alpine,
+  volumes= {
+    "./storage/code-server": "/home/coder/.local/share/code-server-host",
+    f"{home}/src" : "/home/coder/src",
+    f"{home}/.ssh" : "/home/coder/.ssh",
+    f"{home}/dotfiles" : "/home/coder/dotfiles"
+  }
+  
+)
+code_server['ports'] = ['8880:8080']
+
 
 mkdocs = create_service(
   image_name='mkdocs',
@@ -198,7 +234,10 @@ docker_compose = {
     "firefox": render_service(firefox),
     "chrome": render_service(chrome),
     "bitwarden": render_service(bitwarden),
-    "mkdocs": render_service(mkdocs)
+    "mkdocs": render_service(mkdocs),
+    "tmux": render_service(tmux),
+    "nomachine": render_service(nomachine),
+    "code-server": render_service(code_server)
   },
   "networks": {
     "default": {}

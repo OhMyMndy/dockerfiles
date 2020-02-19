@@ -5,11 +5,8 @@ SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
 USER root
 
-RUN install-package --no-install-recommends \
-    fonts-noto \
-    fonts-lato \
+RUN install-package \
     xdg-utils \
-    libpulse0 \
     curl \
   && apt-get clean -y
 
