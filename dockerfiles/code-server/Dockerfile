@@ -44,7 +44,7 @@ RUN curl -LsS https://raw.githubusercontent.com/Mandy91/dotfiles/master/installe
 
 USER root
 
-ADD root/ /
+COPY root/ /
 
 
 ENTRYPOINT [ "/init" ]
