@@ -46,5 +46,6 @@ USER root
 
 ADD root/ /
 
+
 ENTRYPOINT [ "/init" ]
 CMD s6-setuidgid $USER code-server --host 0.0.0.0

@@ -4,6 +4,8 @@ LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/ash", "-o", "pipefail", "-c" ]
 
 ARG USER=user
+ARG PUID=1000
+ARG PGID=1000
 
 ENV SHELL=/bin/bash
 ENV USER=$USER
@@ -18,13 +20,12 @@ ARG OVERLAY_ARCH="amd64"
 ADD https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz /tmp/
 
 RUN apk add --no-cache tar
-RUN tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C / --exclude="./bin" && \
-    tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C /usr ./bin
+RUN tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C / 
 
 # hadolint ignore=SC2169
-RUN adduser -S -h "$HOME" "$USER" \
+RUN addgroup -S -g "$PGID" "$USER"\
+	&& adduser -S -h "$HOME" -G "$USER" "$USER" -u "$PUID"\
 	&& addgroup -S sudo \
-	&& addgroup -S "$USER" \
 	&& mkdir -p "$HOME"/{.ssh,.config,.local/share} \
 	&& chown -R "$USER":"$USER" "$HOME" \
 	&& adduser "$USER" audio \
@@ -39,8 +40,10 @@ WORKDIR $HOME
 
 
 #  ca-certificates libnss3-tools
-RUN apk add --no-cache sudo less file vim iputils git
+RUN apk add --no-cache sudo less file vim iputils git bash
 
+
+COPY /shared/root/ /
 
 
 ENTRYPOINT [ "/init" ]

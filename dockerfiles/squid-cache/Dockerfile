@@ -7,7 +7,7 @@ USER root
 RUN install-package squid
 
 EXPOSE 3128/tcp
-COPY squid.conf /etc/squid/squid.conf
-COPY entrypoint.sh /entrypoint
+COPY squid-cache/squid.conf /etc/squid/squid.conf
+COPY squid-cache/entrypoint.sh /entrypoint
 
 CMD "/entrypoint"

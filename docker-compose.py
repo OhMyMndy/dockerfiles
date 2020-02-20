@@ -71,6 +71,8 @@ default_build_args = {
    "UBUNTU19_10": f"{docker_image_version}-19.10",
    "UBUNTU18_04": f"{docker_image_version}-18.04",
    "USER": f"{user}",
+   "PUID": f"{uid}",
+   "PGID": f"{gid}"
 }
 
 ubuntu1804 = create_service(
@@ -185,7 +187,7 @@ vpn['command'] = 'sleep infinity'
 alpine = create_service(
   image_name='alpine',
   version=f'{docker_image_version}',
-  build_args={}
+  build_args=default_build_args
 )
 
 tmux = create_service(

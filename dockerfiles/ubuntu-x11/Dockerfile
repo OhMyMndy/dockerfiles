@@ -25,5 +25,5 @@ RUN install-package \
 	dconf \
 	gtk2-engines-pixbuf \
 	--no-install-recommends
-
-COPY root/ /
+	
+COPY ubuntu-x11/root/ /

@@ -18,7 +18,7 @@ RUN apt-get update \
   && rm /tmp/nomachine.deb
   
 
-COPY root/ /
+COPY nomachine/root/ /
 
 USER $USER
 RUN mkdir "$HOME/.nx"

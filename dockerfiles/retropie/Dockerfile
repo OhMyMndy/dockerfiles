@@ -15,7 +15,7 @@ RUN git clone --depth=1 https://github.com/RetroPie/RetroPie-Setup.git
 USER root
 ENV DEBIAN_FRONTEND=noninteractive
 
-COPY ./install.sh /usr/local/bin/install.sh
+COPY /retropie/install.sh /usr/local/bin/install.sh
 RUN chmod +x /usr/local/bin/install.sh
 
 RUN usermod -aG plugdev,input "$USER" 
@@ -50,7 +50,7 @@ RUN sudo -E install.sh lr-desmume
 
 USER root
 RUN ln -s /opt/retropie/supplementary/skyscraper/Skyscraper /usr/local/bin/Skyscraper
-# COPY ./es_systems.cfg /opt/retropie/configs/all/emulationstation/es_systems.cfg
+# COPY /retropie/es_systems.cfg /opt/retropie/configs/all/emulationstation/es_systems.cfg
 
 USER $USER
 RUN mkdir -p "$HOME"/{.emulationstation,.skyscraper}
@@ -59,11 +59,11 @@ RUN sudo chown "$USER":"$USER" -R /opt/retropie/configs
 VOLUME $HOME/.emulationstation
 VOLUME $HOME/.skyscraper
 
-COPY skyscript.sh $HOME/.skyscript.sh
+COPY /retropie/skyscript.sh $HOME/.skyscript.sh
 
 RUN sudo chown "$USER":"$USER" -R "$HOME"
 
-COPY ./entrypoint.sh /entrypoint
+COPY /retropie/entrypoint.sh /entrypoint
 
 ENTRYPOINT [ "/entrypoint" ]
 CMD [ "emulationstation" ]

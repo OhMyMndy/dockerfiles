@@ -19,5 +19,4 @@ VOLUME $USER/.mozilla
 
 USER root
 
-COPY root/ /
 CMD s6-setuidgid $USER firefox

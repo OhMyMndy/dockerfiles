@@ -1,0 +1,32 @@
+#!/usr/bin/with-contenv bash
+
+# @see https://raw.githubusercontent.com/linuxserver/docker-baseimage-alpine/master/root/etc/cont-init.d/10-adduser
+
+if [[ -n $USER ]] && [[ -n $HOME ]]; then
+	PUID="${PUID:-1000}"
+	PGID="${PGID:-1000}"
+		
+	if command -v groupmod &>/dev/null; then 
+		groupmod -o -g "$PGID" "$USER"
+	elif command -v addgroup &>/dev/null; then
+		addgroup -g "$PGID" "$USER"
+	fi
+
+	if command -v usermod &>/dev/null; then 
+		usermod -o -u "$PUID" "$USER"
+	elif command -v adduser &>/dev/null; then
+		adduser -u "$PUID" "$USER"
+	fi
+
+fi
+
+if [[ -n $DOCKER_GID ]] && [[ -n $USER ]]; then
+	if command -v groupmod &>/dev/null; then 
+		groupadd -g "$DOCKER_GID" docker;
+   	 	groupmod -o -g "$DOCKER_GID" docker;
+	elif command -v addgroup &>/dev/null; then
+		addgroup -g "$DOCKER_GID" docker;
+    	addgroup -g "$DOCKER_GID" docker;
+    	adduser "$DOCKER_GID" "$USER";
+	fi
+fi

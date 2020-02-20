@@ -2,6 +2,7 @@
 
 import pprint
 import copy
+import os
 
 def render_service(service):
   if 'volumes' in service:
@@ -10,6 +11,7 @@ def render_service(service):
 
 
 def create_service(image_name: str, version: str = None, build_args: dict = None, environment: dict = {}, volumes: dict = {}, extends: dict = None) -> dict:
+  cwd = os.getcwd()
   if not isinstance(image_name, str):
     raise AssertionError("Name has to be a string " + type(str) + " given")
   if version is None:
@@ -42,12 +44,14 @@ def create_service(image_name: str, version: str = None, build_args: dict = None
         args = result['build']['args'].copy()
         args.update(build_args)
         result['build']["args"] = args
-      result['build']["context"] = f"./dockerfiles/{image_name}"
+      result['build']["context"] = f"{cwd}/dockerfiles/"
+      result['build']["dockerfile"] = f"{cwd}//dockerfiles/{image_name}/Dockerfile"
 
 
   elif 'build' not in result and build_args is not None:
       result["build"] = {
-          "context": f"./dockerfiles/{image_name}",
+          "context": f"{cwd}/dockerfiles/",
+          "dockerfile": f"{cwd}/dockerfiles/{image_name}/Dockerfile",
           "args": dict(build_args)
       }
 

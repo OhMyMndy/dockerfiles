@@ -27,6 +27,6 @@ RUN curl -LsS https://raw.githubusercontent.com/Mandy91/dotfiles/master/installe
 RUN mv $HOME/.config/Code $HOME/.config/Code_original
 
 USER root
-COPY root/ /
+COPY vscode/root/ /
 
 CMD s6-setuidgid $USER /bin/bash -c "code && while pgrep code &>/dev/null; do sleep 10; done"

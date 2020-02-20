@@ -17,7 +17,7 @@ RUN usermod -aG audio,video,root,input,plugdev "$USER" \
 RUN usermod -aG plugdev,input "$USER" 
 RUN echo "$USER ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/all
 RUN passwd -d "$USER"
-COPY ./entrypoint.sh /entrypoint
+COPY /retroarch/entrypoint.sh /entrypoint
 
 
 USER $USER
