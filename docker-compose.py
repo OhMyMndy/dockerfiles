@@ -199,14 +199,13 @@ tmux = create_service(
 code_server = create_service(
   image_name='code-server',
   version=f'{docker_image_version}',
-  extends=alpine,
-  volumes= {
+  extends=ubuntu1804,
+  volumes={
     "./storage/code-server": "/home/coder/.local/share/code-server-host",
     f"{home}/src" : "/home/coder/src",
     f"{home}/.ssh" : "/home/coder/.ssh",
     f"{home}/dotfiles" : "/home/coder/dotfiles"
   }
-  
 )
 code_server['ports'] = ['8880:8080']
 
