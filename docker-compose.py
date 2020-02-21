@@ -83,6 +83,21 @@ ubuntu1804 = create_service(
   volumes=global_volumes
 )
 
+gitlab = create_service(
+  image_name='gitlab',
+  version=f'{docker_image_version}',
+  extends=ubuntu1804,
+  volumes={
+    "./storage/gitlab/config": "/etc/gitlab",
+    "./storage/gitlab/logs": "/var/log/gitlab",
+    "./storage/gitlab/data": "/var/opt/gitlab",
+    }
+)
+gitlab['ports'] = [
+  "8880:80",
+  "2222:22"
+]
+
 ubuntu1804_x11 = create_service(
   image_name='ubuntu-x11',
   version=f'{docker_image_version}-18.04',
@@ -131,6 +146,7 @@ firefox = create_service(
   extends=ubuntu1910_x11_hw
 )
 firefox['network_mode'] = 'service:vpn'
+del firefox['hostname']
 
 chrome_volumes = {
       "./storage/chrome": f"/data",
@@ -143,6 +159,7 @@ chrome = create_service(
   extends=ubuntu1910_x11_hw
 )
 chrome['network_mode'] = 'service:vpn'
+del chrome['hostname']
 chrome['security_opt'] = [ "seccomp=./seccomp/chrome.json" ]
 
 vlc = create_service(
@@ -156,9 +173,14 @@ vlc = create_service(
 bitwarden = create_service(
   image_name='bitwarden',
   version=f'{docker_image_version}',
-  extends=ubuntu1804_x11_hw
+  extends=ubuntu1804_x11_hw,
+  volumes={
+    "./storage/bitwarden": f"{home}/.config/Bitwarden"
+  }
 )
 bitwarden['network_mode'] = 'service:vpn'
+del bitwarden['hostname']
+
 
 
 nomachine = create_service(
@@ -173,6 +195,8 @@ nomachine = create_service(
   }
 )
 nomachine['network_mode'] = 'service:vpn'
+del nomachine['hostname']
+
 
 vpn = create_service(
   image_name='vpn',
@@ -238,7 +262,8 @@ docker_compose = {
     "mkdocs": render_service(mkdocs),
     "tmux": render_service(tmux),
     "nomachine": render_service(nomachine),
-    "code-server": render_service(code_server)
+    "code-server": render_service(code_server),
+    "gitlab": render_service(gitlab),
   },
   "networks": {
     "default": {}

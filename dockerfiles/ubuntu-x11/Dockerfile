@@ -1,6 +1,6 @@
 ARG VERSION
 ARG DOCKER_IMAGE_VERSION
-FROM mandy91/ubuntu-x11:${DOCKER_IMAGE_VERSION}-$VERSION
+FROM mandy91/ubuntu:${DOCKER_IMAGE_VERSION}-$VERSION
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
@@ -22,7 +22,6 @@ RUN install-package \
 	fonts-lato \
 	dbus-x11 \
 	dbus \
-	dconf \
 	gtk2-engines-pixbuf \
 	--no-install-recommends
 	
