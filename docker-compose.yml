@@ -3,8 +3,15 @@ networks:
 services:
   alpine:
     build:
-      args: {}
-      context: /home/mandy/src/dockerfiles/dockerfiles/alpine
+      args:
+        DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
+        UBUNTU18_04: 0.1-18.04
+        UBUNTU19_10: 0.1-19.10
+        USER: mandy
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles/dockerfiles/alpine/Dockerfile
     environment: {}
     hostname: alpine
     image: mandy91/alpine:0.1
@@ -16,16 +23,21 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '18.04'
-      context: /home/mandy/src/dockerfiles/dockerfiles/bitwarden
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/bitwarden/Dockerfile
     devices:
     - /dev/dri
     environment:
       DISPLAY: :0.0
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
@@ -64,16 +76,21 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '19.10'
-      context: /home/mandy/src/dockerfiles/dockerfiles/chrome
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/chrome/Dockerfile
     devices:
     - /dev/dri
     environment:
       DISPLAY: :0.0
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
@@ -116,13 +133,18 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '18.04'
-      context: /home/mandy/src/dockerfiles/dockerfiles/code-server
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/code-server/Dockerfile
     environment:
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
@@ -153,16 +175,21 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '19.10'
-      context: /home/mandy/src/dockerfiles/dockerfiles/firefox
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/firefox/Dockerfile
     devices:
     - /dev/dri
     environment:
       DISPLAY: :0.0
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
@@ -203,13 +230,18 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '19.10'
-      context: /home/mandy/src/dockerfiles/dockerfiles/mkdocs
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/mkdocs/Dockerfile
     environment:
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
@@ -237,16 +269,21 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '19.10'
-      context: /home/mandy/src/dockerfiles/dockerfiles/nomachine
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/nomachine/Dockerfile
     devices:
     - /dev/dri
     environment:
       DISPLAY: :0.0
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
@@ -287,8 +324,15 @@ services:
     - /home/mandy/src/dockerfiles/storage/nomachine:/home/mandy/NoMachine:rw
   tmux:
     build:
-      args: {}
-      context: /home/mandy/src/dockerfiles/dockerfiles/tmux
+      args:
+        DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
+        UBUNTU18_04: 0.1-18.04
+        UBUNTU19_10: 0.1-19.10
+        USER: mandy
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/tmux/Dockerfile
     environment: {}
     hostname: tmux
     image: mandy91/tmux:0.1
@@ -300,13 +344,18 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '18.04'
-      context: /home/mandy/src/dockerfiles/dockerfiles/ubuntu
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles/dockerfiles/ubuntu/Dockerfile
     environment:
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
@@ -331,16 +380,21 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '18.04'
-      context: /home/mandy/src/dockerfiles/dockerfiles/ubuntu-x11
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/ubuntu-x11/Dockerfile
     devices:
     - /dev/dri
     environment:
       DISPLAY: :0.0
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
@@ -378,16 +432,21 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '18.04'
-      context: /home/mandy/src/dockerfiles/dockerfiles/ubuntu-x11-hw
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/ubuntu-x11-hw/Dockerfile
     devices:
     - /dev/dri
     environment:
       DISPLAY: :0.0
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
@@ -425,13 +484,18 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '19.10'
-      context: /home/mandy/src/dockerfiles/dockerfiles/ubuntu
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/ubuntu/Dockerfile
     environment:
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
@@ -456,16 +520,21 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '19.10'
-      context: /home/mandy/src/dockerfiles/dockerfiles/ubuntu-x11
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/ubuntu-x11/Dockerfile
     devices:
     - /dev/dri
     environment:
       DISPLAY: :0.0
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
@@ -503,16 +572,21 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '19.10'
-      context: /home/mandy/src/dockerfiles/dockerfiles/ubuntu-x11-hw
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/ubuntu-x11-hw/Dockerfile
     devices:
     - /dev/dri
     environment:
       DISPLAY: :0.0
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
@@ -550,16 +624,21 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '19.10'
-      context: /home/mandy/src/dockerfiles/dockerfiles/vlc
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/vlc/Dockerfile
     devices:
     - /dev/dri
     environment:
       DISPLAY: :0.0
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
@@ -597,14 +676,19 @@ services:
     build:
       args:
         DOCKER_IMAGE_VERSION: '0.1'
+        PGID: '1000'
+        PUID: '1000'
         UBUNTU18_04: 0.1-18.04
         UBUNTU19_10: 0.1-19.10
         USER: mandy
         VERSION: '19.10'
-      context: /home/mandy/src/dockerfiles/dockerfiles/vpn
+      context: /home/mandy/src/dockerfiles/dockerfiles
+      dockerfile: /home/mandy/src/dockerfiles//dockerfiles/vpn/Dockerfile
     command: sleep infinity
     environment:
       DOCKER_IMAGE_VERSION: '0.1'
+      PGID: '1000'
+      PUID: '1000'
       UBUNTU18_04: 0.1-18.04
       UBUNTU19_10: 0.1-19.10
       USER: mandy
