@@ -1,12 +1,12 @@
 #!/usr/bin/bash
-
+set -e
 apt update -qq
 
 
 DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y -qq software-properties-common
 
 # shellcheck disable=2068
-$(command -v add-apt-repository)  $@
+apt-add-repository "$@"
 
 DEBIAN_FRONTEND=noninteractive apt-get remove software-properties-common -y -qq
 

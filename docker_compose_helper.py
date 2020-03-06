@@ -7,6 +7,9 @@ import os
 def render_service(service):
   if 'volumes' in service:
     service['volumes'] = list('{}:{}'.format(key, value) for key, value in service['volumes'].items())
+    
+  if 'network_mode' in service:
+    del service['hostname']
   return service
 
 

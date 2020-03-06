@@ -121,6 +121,19 @@ ubuntu1910 = create_service(
   extends=ubuntu1804
 )
 
+wine = create_service(
+  image_name='wine',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910
+)
+
+wine5 = create_service(
+  image_name='wine5',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910
+)
+
+
 ubuntu1910_x11 = create_service(
   image_name='ubuntu-x11',
   version=f'{docker_image_version}-19.10',
@@ -135,6 +148,13 @@ ubuntu1910_x11_hw = create_service(
   extends=ubuntu1910_x11
 )
 
+
+mobaxterm = create_service(
+  image_name='mobaxterm',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910_x11_hw
+)
+
 firefox_volumes = {
       "./storage/firefox": f"{home}/.mozilla",
       f"{home}/Downloads": f"{home}/Downloads"
@@ -146,7 +166,6 @@ firefox = create_service(
   extends=ubuntu1910_x11_hw
 )
 firefox['network_mode'] = 'service:vpn'
-del firefox['hostname']
 
 chrome_volumes = {
       "./storage/chrome": f"/data",
@@ -159,7 +178,6 @@ chrome = create_service(
   extends=ubuntu1910_x11_hw
 )
 chrome['network_mode'] = 'service:vpn'
-del chrome['hostname']
 chrome['security_opt'] = [ "seccomp=./seccomp/chrome.json" ]
 
 vlc = create_service(
@@ -179,7 +197,6 @@ bitwarden = create_service(
   }
 )
 bitwarden['network_mode'] = 'service:vpn'
-del bitwarden['hostname']
 
 
 
@@ -195,7 +212,6 @@ nomachine = create_service(
   }
 )
 nomachine['network_mode'] = 'service:vpn'
-del nomachine['hostname']
 
 
 vpn = create_service(
@@ -264,6 +280,9 @@ docker_compose = {
     "nomachine": render_service(nomachine),
     "code-server": render_service(code_server),
     "gitlab": render_service(gitlab),
+    "wine": render_service(wine),
+    "wine5": render_service(wine5),
+    "mobaxterm": render_service(mobaxterm),
   },
   "networks": {
     "default": {}
