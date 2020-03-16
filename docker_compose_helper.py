@@ -3,6 +3,15 @@
 import pprint
 import copy
 import os
+import pwd
+import grp
+
+uid = os.getuid()
+gid = os.getgid()
+docker_gid = grp.getgrnam('docker').gr_gid
+home = os.path.expanduser("~")
+user = pwd.getpwuid(os.getuid())[0]
+
 
 def render_service(service):
   if 'volumes' in service:
@@ -60,3 +69,41 @@ def create_service(image_name: str, version: str = None, build_args: dict = None
 
   return result
   
+  
+
+global_volumes = {
+  "/var/lib/lxcfs/proc/cpuinfo": "/proc/cpuinfo:rw",
+  "/var/lib/lxcfs/proc/diskstats": "/proc/diskstats:rw",
+  "/var/lib/lxcfs/proc/meminfo": "/proc/meminfo:rw", 
+  "/var/lib/lxcfs/proc/stat": "/proc/stat:rw",
+  "/var/lib/lxcfs/proc/swaps": "/proc/swaps:rw",
+  "/var/lib/lxcfs/proc/uptime": "/proc/uptime:rw",
+  "/etc/timezone": "/etc/timezone:ro",
+  "/etc/localtime": "/etc/localtime:ro",
+  # "./dockerfiles/ubuntu/root/etc/cron.d": "/etc/cron.d:ro",
+  "/dev/shm": "/dev/shm",
+  "/etc/machine-id": "/etc/machine-id:ro",
+}
+
+global_volumes = {k:v for k,v in global_volumes.items() if os.path.isfile(k) or os.path.isdir(k)}
+
+
+
+
+x11_volumes = {
+    "/tmp/.X11-unix": "/tmp/.X11-unix",
+    f"/run/user/{uid}/pulse": "/run/user/1000/pulse",
+    "./etc/pulse/pulse-client.conf": "/etc/pulse/client.conf:ro",
+    f"{home}/.config/fontconfig": "/root/.config/fontconfig:ro",
+    f"{home}/.config/fontconfig": f"{home}/.config/fontconfig:ro",
+    f"{home}/.config/gtk-2.0": f"{home}/.config/gtk-2.0:ro",
+    f"{home}/.config/gtk-3.0": f"{home}/.config/gtk-3.0:ro",
+    f"{home}/.Xresources": f"{home}/.Xresources",
+    "./etc/ssl/certificates": "/etc/ssl/certificates:ro",
+    "/usr/share/fonts": "/usr/share/fonts:ro",
+    "/usr/share/themes": "/usr/share/themes:ro",
+    "/usr/share/icons": "/usr/share/icons:ro",
+    "/usr/share/fontconfig": "/usr/share/fontconfig:ro",
+    f"{home}/.local/share/fonts": f"{home}/.local/share/fonts:ro",
+}
+x11_volumes = {k:v for k,v in x11_volumes.items() if os.path.isfile(k) or os.path.isdir(k)}

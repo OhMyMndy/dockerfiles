@@ -14,7 +14,7 @@ from os.path import dirname
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
-from docker_compose_helper import create_service, render_service
+from docker_compose_helper import create_service, render_service, global_volumes, x11_volumes
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -25,41 +25,6 @@ home = os.path.expanduser("~")
 user = pwd.getpwuid(os.getuid())[0]
 
 docker_image_version = 0.1
-
-global_volumes = {
-  "/var/lib/lxcfs/proc/cpuinfo": "/proc/cpuinfo:rw",
-  "/var/lib/lxcfs/proc/diskstats": "/proc/diskstats:rw",
-  "/var/lib/lxcfs/proc/meminfo": "/proc/meminfo:rw", 
-  "/var/lib/lxcfs/proc/stat": "/proc/stat:rw",
-  "/var/lib/lxcfs/proc/swaps": "/proc/swaps:rw",
-  "/var/lib/lxcfs/proc/uptime": "/proc/uptime:rw",
-  "/etc/timezone": "/etc/timezone:ro",
-  "/etc/localtime": "/etc/localtime:ro",
-  # "./dockerfiles/ubuntu/root/etc/cron.d": "/etc/cron.d:ro",
-  "/dev/shm": "/dev/shm",
-  "/etc/machine-id": "/etc/machine-id:ro",
-}
-
-global_volumes = {k:v for k,v in global_volumes.items() if os.path.isfile(k) or os.path.isdir(k)}
-
-
-x11_volumes = {
-    "/tmp/.X11-unix": "/tmp/.X11-unix",
-    f"/run/user/{uid}/pulse": "/run/user/1000/pulse",
-    "./etc/pulse/pulse-client.conf": "/etc/pulse/client.conf:ro",
-    f"{home}/.config/fontconfig": "/root/.config/fontconfig:ro",
-    f"{home}/.config/fontconfig": f"{home}/.config/fontconfig:ro",
-    f"{home}/.config/gtk-2.0": f"{home}/.config/gtk-2.0:ro",
-    f"{home}/.config/gtk-3.0": f"{home}/.config/gtk-3.0:ro",
-    f"{home}/.Xresources": f"{home}/.Xresources",
-    "./etc/ssl/certificates": "/etc/ssl/certificates:ro",
-    "/usr/share/fonts": "/usr/share/fonts:ro",
-    "/usr/share/themes": "/usr/share/themes:ro",
-    "/usr/share/icons": "/usr/share/icons:ro",
-    "/usr/share/fontconfig": "/usr/share/fontconfig:ro",
-    f"{home}/.local/share/fonts": f"{home}/.local/share/fonts:ro",
-}
-x11_volumes = {k:v for k,v in x11_volumes.items() if os.path.isfile(k) or os.path.isdir(k)}
 
 
 x11_environment = {
@@ -121,18 +86,6 @@ ubuntu1910 = create_service(
   extends=ubuntu1804
 )
 
-wine = create_service(
-  image_name='wine',
-  version=f'{docker_image_version}',
-  extends=ubuntu1910
-)
-
-wine5 = create_service(
-  image_name='wine5',
-  version=f'{docker_image_version}',
-  extends=ubuntu1910
-)
-
 
 ubuntu1910_x11 = create_service(
   image_name='ubuntu-x11',
@@ -146,6 +99,22 @@ ubuntu1910_x11_hw = create_service(
   image_name='ubuntu-x11-hw',
   version=f'{docker_image_version}-19.10',
   extends=ubuntu1910_x11
+)
+
+
+wine = create_service(
+  image_name='wine',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910_x11
+)
+
+wine5 = create_service(
+  image_name='wine5',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910_x11,
+  environment={
+    "QT_X11_NO_MITSHM": 1
+  }
 )
 
 
@@ -167,6 +136,21 @@ firefox = create_service(
 )
 firefox['network_mode'] = 'service:vpn'
 
+filezilla = create_service(
+  image_name='filezilla',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910_x11_hw
+)
+
+dosbox_volumes = {
+      "./storage/dosbox": f"{home}/.config/dosbox",
+}
+dosbox = create_service(
+  image_name='dosbox',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910_x11_hw,
+  volumes=dosbox_volumes
+)
 chrome_volumes = {
       "./storage/chrome": f"/data",
       f"{home}/Downloads": f"{home}/Downloads"
@@ -187,6 +171,15 @@ vlc = create_service(
   volumes=x11_volumes,
   extends=ubuntu1910_x11_hw
 )
+
+
+quicktile = create_service(
+  image_name='quicktile',
+  version=f'{docker_image_version}',
+  volumes={
+    f"{home}/.config/quiocktile.cfg": f"{home}/.config/quiocktile.cfg"
+  },
+  extends=ubuntu1910_x11)
 
 bitwarden = create_service(
   image_name='bitwarden',
@@ -236,8 +229,6 @@ tmux = create_service(
   extends=alpine
 )
 
-
-# docker-compose-wrapper run -d --service-ports code-server s6-setuidgid coder code-server --host 0.0.0.0 --auth none
 code_server = create_service(
   image_name='code-server',
   version=f'{docker_image_version}',
@@ -273,6 +264,7 @@ docker_compose = {
     "vlc": render_service(vlc),
     "vpn": render_service(vpn),
     "firefox": render_service(firefox),
+    "filezilla": render_service(filezilla),
     "chrome": render_service(chrome),
     "bitwarden": render_service(bitwarden),
     "mkdocs": render_service(mkdocs),
@@ -283,6 +275,8 @@ docker_compose = {
     "wine": render_service(wine),
     "wine5": render_service(wine5),
     "mobaxterm": render_service(mobaxterm),
+    "dosbox": render_service(dosbox),
+    "quicktile": render_service(quicktile),
   },
   "networks": {
     "default": {}
