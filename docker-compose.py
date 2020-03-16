@@ -6,7 +6,7 @@ import grp
 import pwd
 import pprint
 import copy
-from collections import Collection
+from collections.abc import Collection
 from collections import defaultdict
 
 import sys
@@ -217,6 +217,28 @@ vpn = create_service(
 vpn['privileged'] = True
 vpn['command'] = 'sleep infinity'
 
+crafty = create_service(
+  image_name='crafty',
+  version=f'{docker_image_version}',
+    volumes={
+    "./storage/crafty/db": f"/crafty_db",
+    "./storage/crafty/certs": f"{home}/crafty/crafty-web/app/web/certs"
+  },
+  extends=ubuntu1910
+)
+crafty['ports'] = [
+  "8000:8000",
+  "25565:25565"
+]
+crafty["deploy"] = {
+  "resources": {
+    "limits": {
+      "memory": "2400m",
+      "cpus": "1.4"
+    }
+  }
+}
+
 alpine = create_service(
   image_name='alpine',
   version=f'{docker_image_version}',
@@ -277,6 +299,7 @@ docker_compose = {
     "mobaxterm": render_service(mobaxterm),
     "dosbox": render_service(dosbox),
     "quicktile": render_service(quicktile),
+    "crafty": render_service(crafty),
   },
   "networks": {
     "default": {}
