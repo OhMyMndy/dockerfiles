@@ -30,9 +30,12 @@ def create_service(image_name: str, version: str = None, build_args: dict = None
     raise AssertionError("version has to be provided!")
   result = copy.deepcopy(extends)
 
+  if isinstance(build_args, dict):
+      environment.update(build_args)
+
   if extends is None:
     result = {
-        "image": f"mandy91/{image_name}:{version}",
+        "image": f"registry.mandy-home.duckdns.org/mandy91/{image_name}:{version}",
         "hostname": image_name,
         "volumes": volumes,
         "environment": environment,
@@ -44,7 +47,7 @@ def create_service(image_name: str, version: str = None, build_args: dict = None
   if extends is not None:
     result['environment'] = {**result['environment'], **environment}
     result['volumes'] = {**result['volumes'], **volumes}
-    result['image'] =  f"mandy91/{image_name}:{version}"
+    result['image'] =  f"registry.mandy-home.duckdns.org/mandy91/{image_name}:{version}"
     result['hostname'] = image_name
     if build_args and 'build' not in result:
       result['build'] = {

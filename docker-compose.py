@@ -222,7 +222,8 @@ crafty = create_service(
   version=f'{docker_image_version}',
     volumes={
     "./storage/crafty/db": f"/crafty_db",
-    "./storage/crafty/certs": f"{home}/crafty/crafty-web/app/web/certs"
+    "./storage/crafty/certs": f"{home}/crafty/crafty-web/app/web/certs",
+    "./storage/crafty/minecraft": f"{home}/Minecraft"
   },
   extends=ubuntu1910
 )
