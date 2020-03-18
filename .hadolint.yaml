@@ -20,6 +20,8 @@ ignored:
 
   # Use arguments JSON notation for CMD and ENTRYPOINT arguments
   - DL3025
+  # Use only an allowed registry in the FROM image
+  - DL3026
 
 trustedRegistries:
   - docker.io
