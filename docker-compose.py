@@ -274,6 +274,19 @@ mkdocs = create_service(
 )
 mkdocs['ports'] = ['8080:8000']
 
+rclone_browser_volumes = {
+      f"{home}/.config/rclone": f"{home}/.config/rclone",
+      # f"{home}/.config/rclone-browser": f"{home}/.config/rclone-browser",
+      "./storage/rclone-browser": f"{home}/.config/rclone-browser",
+}
+rclone_browser = create_service(
+  image_name='rclone-browser',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910_x11,
+  volumes=rclone_browser_volumes
+)
+
+
 docker_compose = {
   "version": "3.7",
   "services": {
@@ -301,6 +314,7 @@ docker_compose = {
     "dosbox": render_service(dosbox),
     "quicktile": render_service(quicktile),
     "crafty": render_service(crafty),
+    "rclone-browser": render_service(rclone_browser),
   },
   "networks": {
     "default": {}
