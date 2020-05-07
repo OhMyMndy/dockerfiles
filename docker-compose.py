@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-import yaml
 import os
 import grp
 import pwd
@@ -14,7 +13,7 @@ from os.path import dirname
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
-from docker_compose_helper import create_service, render_service, global_volumes, x11_volumes
+from docker_compose_helper import create_service, render_service, global_volumes, x11_volumes, render_config
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -136,11 +135,31 @@ firefox = create_service(
 )
 firefox['network_mode'] = 'service:vpn'
 
+filezilla_volumes = {
+      "./storage/filezilla": f"{home}/.config/filezilla",
+      "./storage/ssh": f"{home}/.ssh",
+      f"{home}/Downloads": f"{home}/Downloads"
+}
 filezilla = create_service(
   image_name='filezilla',
   version=f'{docker_image_version}',
+  volumes=filezilla_volumes, 
   extends=ubuntu1910_x11_hw
 )
+filezilla['network_mode'] = 'service:vpn'
+
+system_tools_volumes = {
+  "./storage/ssh": f"{home}/.ssh",
+  f"{home}/Downloads": f"{home}/Downloads"
+}
+system_tools = create_service(
+  image_name='system-tools',
+  version=f'{docker_image_version}',
+  volumes=system_tools_volumes,
+  extends=ubuntu1910_x11_hw
+)
+system_tools['network_mode'] = 'service:vpn'
+
 
 dosbox_volumes = {
       "./storage/dosbox": f"{home}/.config/dosbox",
@@ -273,6 +292,19 @@ mkdocs = create_service(
 )
 mkdocs['ports'] = ['8080:8000']
 
+jupyter = create_service(
+  image_name='jupyter',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910,
+  volumes={
+    "./storage/jupyter": f"{home}/.jupyter",
+    f"{home}/Downloads": f"{home}/Downloads",
+    f"{home}/Documents/Docs": f"{home}/docs"
+  }
+)
+jupyter['ports'] = ['8888:8888']
+jupyter['networks'] = ['default', 'webdev']
+
 docker_compose = {
   "version": "3.7",
   "services": {
@@ -300,11 +332,17 @@ docker_compose = {
     "dosbox": render_service(dosbox),
     "quicktile": render_service(quicktile),
     "crafty": render_service(crafty),
+    "system-tools": render_service(system_tools),
+    "jupyter": render_service(jupyter),
   },
   "networks": {
-    "default": {}
+    "default": {},
+    "webdev": {
+      "external": {
+        "name": "webdev_default"
+      }
+    }
   }
 }
 
-
-print(yaml.dump(docker_compose))
+print(render_config(docker_compose))
