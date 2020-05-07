@@ -5,17 +5,14 @@ SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
 USER root
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-	gpg-agent \
-	&& apt-get clean -y
+RUN install-package gpg-agent curl
 
 RUN curl -sL https://deb.nodesource.com/setup_12.x | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn bash -
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+RUN install-package \
 	tree sed ack \
 	python3-pip \
 	php-cli php-xml php-mbstring php-curl php-zip php-pdo-sqlite php-pdo-mysql php-intl php-zmq \
-	nodejs \
-	&& apt-get clean -y
+	nodejs
 
 
 RUN curl -sS https://getcomposer.org/installer | php \
@@ -25,7 +22,7 @@ RUN chown -R "$USER":"$USER" "$HOME"
 
 USER $USER
 
-RUN pip3 install jupyterlab 
+RUN pip3 install jupyterlab
 
 RUN curl -sS https://litipk.github.io/Jupyter-PHP-Installer/dist/jupyter-php-installer.phar > /tmp/jupyter.php \
 	&& php /tmp/jupyter.php install \
@@ -46,5 +43,15 @@ RUN jupyter labextension install @jupyterlab/shortcutui
 RUN mkdir -p "$HOME/.jupyter/" \
 	&& echo 'c.NotebookApp.contents_manager_class = "jupytext.TextFileContentsManager"' >> "$HOME/.jupyter/jupyter_notebook_config.py"
 
+USER root
+RUN install-package libmariadbclient-dev
 
-ENTRYPOINT [ "jupyter", "lab", "--ip", "0.0.0.0" ]
+USER $USER
+
+RUN pip3 install ipython-sql && pip3 install mysqlclient
+
+
+USER root
+RUN chown -R "$USER":"$USER" "$HOME"
+
+CMD s6-setuidgid $USER jupyter lab --ip 0.0.0.0

@@ -5,7 +5,8 @@ import copy
 import os
 import pwd
 import grp
-
+import subprocess
+import yaml
 uid = os.getuid()
 gid = os.getgid()
 docker_gid = grp.getgrnam('docker').gr_gid
@@ -15,6 +16,22 @@ home = os.path.expanduser("~")
 user = pwd.getpwuid(os.getuid())[0]
 
 
+def docker_network_exists(network_name):
+  out = subprocess.Popen(['docker', 'network', 'ls', '--format', '{{.Name}}'], 
+           stdout=subprocess.PIPE, 
+           stderr=subprocess.STDOUT)
+  stdout,stderr = out.communicate()
+  
+  return network_name in stdout.decode("utf-8").split()
+
+
+def render_config(config):
+  if 'networks' in config:
+    networks = config['networks'].copy().items()
+    for key, network in networks:
+      if 'external' in network and 'name' in network['external'] and not docker_network_exists(network['external']['name']):
+        del config['networks'][key]['external']
+  return yaml.dump(config)
 
 def render_service(service):
   if 'volumes' in service:
@@ -22,6 +39,7 @@ def render_service(service):
     
   if 'network_mode' in service:
     del service['hostname']
+      
   return service
 
 
@@ -34,7 +52,7 @@ def create_service(image_name: str, version: str = None, build_args: dict = None
   result = copy.deepcopy(extends)
 
   if isinstance(build_args, dict):
-      environment.update(build_args)
+    environment.update(build_args)
 
   if extends is None:
     result = {
