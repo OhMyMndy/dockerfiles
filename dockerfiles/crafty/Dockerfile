@@ -1,5 +1,5 @@
 ARG UBUNTU19_10
-FROM mandy91/ubuntu:$UBUNTU19_10
+FROM registry.mandy-home.duckdns.org/mandy91/ubuntu:$UBUNTU19_10
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
@@ -15,16 +15,22 @@ RUN mkdir -p "$HOME/Minecraft" \
   && mkdir -p touch "$HOME/Minecraft/logs" \
   && touch "$HOME/Minecraft/logs/latest.log"
 
+# hadolint ignore=DL3003
 RUN mkdir -p "$HOME/crafty" \
   && cd "$HOME/crafty" \
   && git clone https://gitlab.com/Ptarrant1/crafty-web.git
 
+# hadolint ignore=DL3003
 RUN cd "$HOME/crafty/crafty-web" \
   && pip3 install -r requirements.txt
 
 COPY crafty/config.yml "$HOME/crafty/config.yml"
 RUN echo 'eula=true' > "$HOME/Minecraft/eula.txt"
 
+EXPOSE 8000
+EXPOSE 25565
+
+# hadolint ignore=DL3000
 WORKDIR "$HOME/crafty/crafty-web"
 USER root
 RUN mkdir -p /crafty_db && chown "$USER:$USER" -R /crafty_db

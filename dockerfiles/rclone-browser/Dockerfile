@@ -4,13 +4,11 @@ LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
 USER root
-RUN add-apt-repository ppa:linuxuprising/shutter \
-  && package-install shutter --no-install-recommends
-
+RUN install-package rclone-browser rclone
 USER "$USER"
-RUN mkdir -p ~/{.shutter,Pictures}
+RUN mkdir -p ~/.config/rclone-browser
 
-VOLUME [ "$HOME/.shutter" ]
+VOLUME [ "$HOME/.config/rclone-browser" ]
 
 USER root
-CMD s6-setuidgid $USER shutter
+CMD s6-setuidgid $USER rclone-browser

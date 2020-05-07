@@ -241,7 +241,8 @@ crafty = create_service(
   version=f'{docker_image_version}',
     volumes={
     "./storage/crafty/db": f"/crafty_db",
-    "./storage/crafty/certs": f"{home}/crafty/crafty-web/app/web/certs"
+    "./storage/crafty/certs": f"{home}/crafty/crafty-web/app/web/certs",
+    "./storage/crafty/minecraft": f"{home}/Minecraft"
   },
   extends=ubuntu1910
 )
@@ -304,6 +305,18 @@ jupyter = create_service(
 )
 jupyter['ports'] = ['8888:8888']
 jupyter['networks'] = ['default', 'webdev']
+rclone_browser_volumes = {
+      f"{home}/.config/rclone": f"{home}/.config/rclone",
+      # f"{home}/.config/rclone-browser": f"{home}/.config/rclone-browser",
+      "./storage/rclone-browser": f"{home}/.config/rclone-browser",
+}
+rclone_browser = create_service(
+  image_name='rclone-browser',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910_x11,
+  volumes=rclone_browser_volumes
+)
+
 
 docker_compose = {
   "version": "3.7",
@@ -334,6 +347,7 @@ docker_compose = {
     "crafty": render_service(crafty),
     "system-tools": render_service(system_tools),
     "jupyter": render_service(jupyter),
+    "rclone-browser": render_service(rclone_browser),
   },
   "networks": {
     "default": {},
