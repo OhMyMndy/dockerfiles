@@ -27,6 +27,9 @@ DOCKER_PUSH_CMD = $(DOCKER_COMPOSE_BIN) push $(1) $(args)
 
 
 build-deps:
+	$(call DOCKER_BUILD_CMD, "ubuntu20.04")
+	$(call DOCKER_BUILD_CMD, "ubuntu20.04-x11")
+	$(call DOCKER_BUILD_CMD, "ubuntu20.04-x11-hw")
 	$(call DOCKER_BUILD_CMD, "ubuntu19.10")
 	$(call DOCKER_BUILD_CMD, "ubuntu19.10-x11")
 	$(call DOCKER_BUILD_CMD, "ubuntu19.10-x11-hw")
@@ -38,6 +41,9 @@ build-deps:
 	$(call DOCKER_BUILD_CMD, "wine5")
 	
 push-deps:
+	$(call DOCKER_PUSH_CMD, "ubuntu20.04")
+	$(call DOCKER_PUSH_CMD, "ubuntu20.04-x11")
+	$(call DOCKER_PUSH_CMD, "ubuntu20.04-x11-hw")
 	$(call DOCKER_PUSH_CMD, "ubuntu19.10")
 	$(call DOCKER_PUSH_CMD, "ubuntu19.10-x11")
 	$(call DOCKER_PUSH_CMD, "ubuntu19.10-x11-hw")

@@ -1,12 +1,12 @@
-ARG DOCKER_IMAGE_VERSION
-FROM registry.mandy-home.duckdns.org/mandy91/ubuntu-x11-hw:$DOCKER_IMAGE_VERSION
+ARG UBUNTU20_04
+FROM registry.mandy-home.duckdns.org/mandy91/ubuntu-x11-hw:$UBUNTU20_04
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
 USER root
 
 RUN add-apt-repository ppa:libretro/stable \
-  install-package \
+  && install-package \
    'retroarch*' \
    'libretro*'
 
@@ -24,5 +24,6 @@ USER $USER
 
 VOLUME $USER/.config/retroarch
 
-ENTRYPOINT [ "/entrypoint" ]
-CMD [ "retroarch" ]
+
+USER root
+CMD s6-setuidgid $USER retroarch

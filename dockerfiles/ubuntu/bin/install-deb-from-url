@@ -3,6 +3,12 @@
 # shellcheck disable=SC2124
 url="$@"
 tmp="$(mktemp)"
+
+if ! command -v curl &>/dev/null; then
+    apt-get update
+    apt-get install -y -qq curl
+fi
+
 curl -LsS "$url" -o "$tmp"
 dpkg -i "$tmp"
 apt-get update -qq

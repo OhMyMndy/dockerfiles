@@ -21,6 +21,8 @@ pp = pprint.PrettyPrinter(indent=4)
 uid = os.getuid()
 gid = os.getgid()
 docker_gid = grp.getgrnam('docker').gr_gid
+input_gid = grp.getgrnam('input').gr_gid
+plugdev_gid = grp.getgrnam('plugdev').gr_gid
 home = os.path.expanduser("~")
 user = pwd.getpwuid(os.getuid())[0]
 
@@ -28,17 +30,22 @@ docker_image_version = 0.1
 
 
 x11_environment = {
-  "DISPLAY": os.environ['DISPLAY']
+  "DISPLAY": os.environ['DISPLAY'],
+  "DOCKER_GID": docker_gid,
+  "INPUT_GROUP_ID": input_gid,
+  "PLUGDEV_GROUP_ID": plugdev_gid
 }
 
 default_build_args = {
    "DOCKER_IMAGE_VERSION": f"{docker_image_version}",
    "UBUNTU19_10": f"{docker_image_version}-19.10",
    "UBUNTU18_04": f"{docker_image_version}-18.04",
+   "UBUNTU20_04": f"{docker_image_version}-20.04",
    "USER": f"{user}",
    "PUID": f"{uid}",
    "PGID": f"{gid}"
 }
+
 
 ubuntu1804 = create_service(
   image_name='ubuntu',
@@ -68,9 +75,9 @@ ubuntu1804_x11 = create_service(
   version=f'{docker_image_version}-18.04',
   environment=x11_environment,
   volumes=x11_volumes,
-  extends=ubuntu1804
+  extends=ubuntu1804,
+  devices= ['/dev/dri'],
 )
-ubuntu1804_x11['devices'] = ['/dev/dri']
 
 ubuntu1804_x11_hw = create_service(
   image_name='ubuntu-x11-hw',
@@ -92,15 +99,42 @@ ubuntu1910_x11 = create_service(
   version=f'{docker_image_version}-19.10',
   environment=x11_environment,
   volumes=x11_volumes,
-  extends=ubuntu1910
+  extends=ubuntu1910,
+  devices= ['/dev/dri']
 )
-ubuntu1910_x11['devices'] = ['/dev/dri']
+
 ubuntu1910_x11_hw = create_service(
   image_name='ubuntu-x11-hw',
   version=f'{docker_image_version}-19.10',
   extends=ubuntu1910_x11
 )
 
+
+
+ubuntu2004 = create_service(
+  image_name='ubuntu',
+  version=f'{docker_image_version}-20.04',
+  build_args={"VERSION": "20.04"},
+  environment={"VERSION": "20.04"},
+  extends=ubuntu1804
+)
+
+
+ubuntu2004_x11 = create_service(
+  image_name='ubuntu-x11',
+  version=f'{docker_image_version}-20.04',
+  environment=x11_environment,
+  volumes=x11_volumes,
+  extends=ubuntu2004,
+  devices= ['/dev/dri']
+)
+
+ubuntu2004_x11_hw = create_service(
+  image_name='ubuntu-x11-hw',
+  version=f'{docker_image_version}-20.04',
+  extends=ubuntu2004_x11
+
+)
 
 wine = create_service(
   image_name='wine',
@@ -151,6 +185,70 @@ dosbox = create_service(
   extends=ubuntu1910_x11_hw,
   volumes=dosbox_volumes
 )
+
+
+retropie_volumes = {
+      "/run/udev/control": "/run/udev/control",
+      "/dev/bus/usb": "/dev/bus/usb",
+      # "/dev/serial": "/dev/serial",
+      "/dev/input": "/dev/input",
+      "./storage/retropie/emulationstation": f"{home}/.emulationstation",
+      "./storage/retropie/skyscraper": f"{home}/.skyscraper",
+      "./dockerfiles/retropie/entrypoint.sh": "/entrypoint",
+      "./dockerfiles/retropie/skyscript.sh": f"{home}/.skyscript.sh",
+      "/tank/media/games/retropie/roms": f"{home}/RetroPie/roms",
+      "/tank/media/games/retropie/bios": f"{home}/RetroPie/BIOS"
+}
+
+retropie = create_service(
+  image_name='retropie',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910_x11_hw,
+  volumes=retropie_volumes,
+  devices=[
+    "/dev/dri",
+    "/dev/shm"
+  ]
+)
+retropie['network_mode'] = 'host'
+retropie['privileged'] = True
+
+
+
+
+retroarch_volumes = {
+      "/run/udev/control": "/run/udev/control",
+      "/dev/bus/usb": "/dev/bus/usb",
+      "/dev/input": "/dev/input",
+      "/tank/media/games/retropie/roms": f"{home}/roms",
+      "/tank/media/games/retropie/bios": f"{home}/BIOS",
+      "./storage/retroarch": f"{home}/.config/retroarch",
+
+}
+
+retroarch = create_service(
+  image_name='retroarch',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910_x11_hw,
+  volumes=retroarch_volumes,
+  devices=[
+    "/dev/dri",
+    "/dev/shm"
+  ]
+)
+retroarch['network_mode'] = 'host'
+retroarch['privileged'] = True
+
+
+php_volumes = {
+}
+php = create_service(
+  image_name='php',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910_x11,
+  volumes=php_volumes
+)
+
 chrome_volumes = {
       "./storage/chrome": f"/data",
       f"{home}/Downloads": f"{home}/Downloads"
@@ -192,6 +290,13 @@ bitwarden = create_service(
 bitwarden['network_mode'] = 'service:vpn'
 
 
+jackaudio = create_service(
+  image_name='jackaudio',
+  version=f'{docker_image_version}',
+  extends=ubuntu1804_x11_hw,
+)
+
+
 
 nomachine = create_service(
   image_name='nomachine',
@@ -205,6 +310,23 @@ nomachine = create_service(
   }
 )
 nomachine['network_mode'] = 'service:vpn'
+
+
+quod_libet = create_service(
+  image_name='quod-libet',
+  version=f'{docker_image_version}',
+  extends=ubuntu1910,
+  volumes={
+    # "./storage/ssh": f"{home}/.ssh",
+    # f"{home}/Downloads": f"{home}/Downloads",
+    # "./storage/nomachine-configs": f"{home}/.nx",
+    # "./storage/nomachine": f"{home}/NoMachine"
+  }
+)
+quod_libet['ports'] = [
+  "4444:4000"
+]
+
 
 
 vpn = create_service(
@@ -255,12 +377,15 @@ tmux = create_service(
 code_server = create_service(
   image_name='code-server',
   version=f'{docker_image_version}',
-  extends=ubuntu1804,
+  extends=ubuntu2004,
   volumes={
     "./storage/code-server": "/home/coder/.local/share/code-server-host",
     f"{home}/src" : "/home/coder/src",
     f"{home}/.ssh" : "/home/coder/.ssh",
     f"{home}/dotfiles" : "/home/coder/dotfiles"
+  },
+  environment= {
+    "USER": 'coder',
   }
 )
 code_server['ports'] = ['8880:8080']
@@ -283,6 +408,9 @@ docker_compose = {
     "ubuntu19.10": render_service(ubuntu1910),
     "ubuntu19.10-x11": render_service(ubuntu1910_x11),
     "ubuntu19.10-x11-hw": render_service(ubuntu1910_x11_hw),
+    "ubuntu20.04": render_service(ubuntu2004),
+    "ubuntu20.04-x11": render_service(ubuntu2004_x11),
+    "ubuntu20.04-x11-hw": render_service(ubuntu2004_x11_hw),
     "alpine": render_service(alpine),
     "vlc": render_service(vlc),
     "vpn": render_service(vpn),
@@ -301,6 +429,11 @@ docker_compose = {
     "dosbox": render_service(dosbox),
     "quicktile": render_service(quicktile),
     "crafty": render_service(crafty),
+    "php": render_service(php),
+    "jackaudio": render_service(jackaudio),
+    "quod-libet": render_service(quod_libet),
+    "retropie": render_service(retropie),
+    "retroarch": render_service(retroarch),
   },
   "networks": {
     "default": {}

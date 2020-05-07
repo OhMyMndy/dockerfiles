@@ -9,8 +9,11 @@ import grp
 uid = os.getuid()
 gid = os.getgid()
 docker_gid = grp.getgrnam('docker').gr_gid
+input_gid = grp.getgrnam('input').gr_gid
+plugdev_gid = grp.getgrnam('plugdev').gr_gid
 home = os.path.expanduser("~")
 user = pwd.getpwuid(os.getuid())[0]
+
 
 
 def render_service(service):
@@ -22,7 +25,7 @@ def render_service(service):
   return service
 
 
-def create_service(image_name: str, version: str = None, build_args: dict = None, environment: dict = {}, volumes: dict = {}, extends: dict = None) -> dict:
+def create_service(image_name: str, version: str = None, build_args: dict = None, environment: dict = {}, volumes: dict = {}, extends: dict = None, devices: list = None) -> dict:
   cwd = os.getcwd()
   if not isinstance(image_name, str):
     raise AssertionError("Name has to be a string " + type(str) + " given")
@@ -41,7 +44,8 @@ def create_service(image_name: str, version: str = None, build_args: dict = None
         "environment": environment,
         "ports": [],
         "init": True,
-        "restart": 'unless-stopped'
+        "restart": 'unless-stopped',
+        "devices": []
       }
 
   if extends is not None:
@@ -69,6 +73,9 @@ def create_service(image_name: str, version: str = None, build_args: dict = None
           "dockerfile": f"{cwd}/dockerfiles/{image_name}/Dockerfile",
           "args": dict(build_args)
       }
+
+  if isinstance(devices, list):
+    result['devices'] = list(set(devices + result['devices']))
 
   return result
   
@@ -103,10 +110,10 @@ x11_volumes = {
     f"{home}/.config/gtk-3.0": f"{home}/.config/gtk-3.0:ro",
     f"{home}/.Xresources": f"{home}/.Xresources",
     "./etc/ssl/certificates": "/etc/ssl/certificates:ro",
-    "/usr/share/fonts": "/usr/share/fonts:ro",
-    "/usr/share/themes": "/usr/share/themes:ro",
-    "/usr/share/icons": "/usr/share/icons:ro",
-    "/usr/share/fontconfig": "/usr/share/fontconfig:ro",
+    # "/usr/share/fonts": "/usr/share/fonts:ro",
+    # "/usr/share/themes": "/usr/share/themes:ro",
+    # "/usr/share/icons": "/usr/share/icons:ro",
+    # "/usr/share/fontconfig": "/usr/share/fontconfig:ro",
     f"{home}/.local/share/fonts": f"{home}/.local/share/fonts:ro",
 }
 x11_volumes = {k:v for k,v in x11_volumes.items() if os.path.isfile(k) or os.path.isdir(k)}
