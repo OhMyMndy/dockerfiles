@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+
+s6-setuidgid $USER tiddlywiki . --init server
+chown "$USER":"$USER" -R /data

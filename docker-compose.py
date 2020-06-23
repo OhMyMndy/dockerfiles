@@ -13,7 +13,7 @@ from os.path import dirname
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
-from docker_compose_helper import create_service, render_service, global_volumes, x11_volumes, render_config
+from docker_compose_helper import x11_environment, default_build_args, create_service, render_service, global_volumes, x11_volumes, render_config
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -27,23 +27,12 @@ user = pwd.getpwuid(os.getuid())[0]
 
 docker_image_version = 0.1
 
-
-x11_environment = {
-  "DISPLAY": os.environ['DISPLAY'],
-  "DOCKER_GID": docker_gid,
-  "INPUT_GROUP_ID": input_gid,
-  "PLUGDEV_GROUP_ID": plugdev_gid
-}
-
-default_build_args = {
+default_build_args.update({
    "DOCKER_IMAGE_VERSION": f"{docker_image_version}",
    "UBUNTU19_10": f"{docker_image_version}-19.10",
    "UBUNTU18_04": f"{docker_image_version}-18.04",
    "UBUNTU20_04": f"{docker_image_version}-20.04",
-   "USER": f"{user}",
-   "PUID": f"{uid}",
-   "PGID": f"{gid}"
-}
+})
 
 
 ubuntu1804 = create_service(
@@ -298,6 +287,30 @@ quicktile = create_service(
   },
   extends=ubuntu1910_x11)
 
+
+upsource = create_service(
+  image_name='jetbrains/upsource:2019.1.1644',
+  version=f'{docker_image_version}',
+  volumes={
+    f"{home}/.upsource/data": "/opt/upsource/data",
+    f"{home}/.upsource/conf": "/opt/upsource/conf",
+    f"{home}/.upsource/logs": "/opt/upsource/logs",
+    f"{home}/.upsource/backups": "/opt/upsource/backups",
+  },
+  extends=ubuntu2004
+)
+upsource['image'] = 'jetbrains/upsource:2019.1.1644'
+upsource['ports'] = ["8089:8080"]
+upsource["deploy"] = {
+  "resources": {
+    "limits": {
+      "memory": "8100m",
+      "cpus": "1.4"
+    }
+  }
+}
+
+
 bitwarden = create_service(
   image_name='bitwarden',
   version=f'{docker_image_version}',
@@ -418,10 +431,36 @@ mkdocs = create_service(
 )
 mkdocs['ports'] = ['8080:8000']
 
+# docker run -it --privileged --network host -v  /var/run/docker.sock:/var/run/docker.sock:ro --pid host --rm vimagick/glances
+
+glances = create_service(
+  image_name='glances',
+  version=f'{docker_image_version}',
+  extends=alpine,
+  volumes={
+    "/var/run/docker.sock": f"/var/run/docker.sock:ro"
+  }
+)
+glances['pid'] = 'host'
+glances['network_mode'] = 'host'
+glances['privileged'] = True
+
+
+tiddlywiki = create_service(
+  image_name='tiddlywiki',
+  version=f'{docker_image_version}',
+  extends=alpine,
+  volumes={
+    "./storage/tiddlywiki": f"/data"
+  }
+)
+tiddlywiki['ports'] = ["8090:8080"]
+
+
 jupyter = create_service(
   image_name='jupyter',
   version=f'{docker_image_version}',
-  extends=ubuntu1910,
+  extends=ubuntu2004,
   volumes={
     "./storage/jupyter": f"{home}/.jupyter",
     f"{home}/Downloads": f"{home}/Downloads",
@@ -430,6 +469,22 @@ jupyter = create_service(
 )
 jupyter['ports'] = ['8888:8888']
 jupyter['networks'] = ['default', 'webdev']
+
+
+jupyter_dind = create_service(
+  image_name='jupyter-dind',
+  version=f'{docker_image_version}',
+  extends=ubuntu2004,
+  # volumes={
+  #   "./storage/jupyter": f"{home}/.jupyter",
+  #   f"{home}/Downloads": f"{home}/Downloads",
+  #   f"{home}/Documents/Docs": f"{home}/docs"
+  # }
+)
+jupyter['ports'] = ['8888:8888']
+jupyter['networks'] = ['default', 'webdev']
+
+
 rclone_browser_volumes = {
       f"{home}/.config/rclone": f"{home}/.config/rclone",
       # f"{home}/.config/rclone-browser": f"{home}/.config/rclone-browser",
@@ -480,7 +535,11 @@ docker_compose = {
     "retroarch": render_service(retroarch),
     "system-tools": render_service(system_tools),
     "jupyter": render_service(jupyter),
+    "jupyter-dind": render_service(jupyter_dind),
     "rclone-browser": render_service(rclone_browser),
+    "upsource": render_service(upsource),
+    "glances": render_service(glances),
+    "tiddlywiki": render_service(tiddlywiki),
   },
   "networks": {
     "default": {},

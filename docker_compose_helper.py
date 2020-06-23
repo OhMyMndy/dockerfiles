@@ -16,6 +16,22 @@ home = os.path.expanduser("~")
 user = pwd.getpwuid(os.getuid())[0]
 
 
+
+x11_environment = {
+  "DISPLAY": os.environ['DISPLAY'],
+  "DOCKER_GID": docker_gid,
+  "INPUT_GROUP_ID": input_gid,
+  "PLUGDEV_GROUP_ID": plugdev_gid
+}
+
+default_build_args = {
+   "USER": f"{user}",
+   "PUID": f"{uid}",
+   "PGID": f"{gid}"
+}
+
+
+
 def docker_network_exists(network_name):
   out = subprocess.Popen(['docker', 'network', 'ls', '--format', '{{.Name}}'], 
            stdout=subprocess.PIPE, 

@@ -30,4 +30,4 @@ RUN tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C / --exclude="./bin" && \
 COPY shared/root/ /
 
 ENTRYPOINT [ "/init" ]
-CMD s6-setuigdid $USER /assets/wrapper
+CMD s6-setuidgid $USER /assets/wrapper

@@ -26,7 +26,7 @@ RUN tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C /
 RUN addgroup -S -g "$PGID" "$USER"\
 	&& adduser -S -h "$HOME" -G "$USER" "$USER" -u "$PUID"\
 	&& addgroup -S sudo \
-	&& mkdir -p "$HOME"/{.ssh,.config,.local/share} \
+	&& mkdir -p "$HOME" \
 	&& chown -R "$USER":"$USER" "$HOME" \
 	&& adduser "$USER" audio \
 	&& adduser "$USER" video \
