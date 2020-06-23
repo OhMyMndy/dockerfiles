@@ -9,9 +9,19 @@ import subprocess
 import yaml
 uid = os.getuid()
 gid = os.getgid()
-docker_gid = grp.getgrnam('docker').gr_gid
-input_gid = grp.getgrnam('input').gr_gid
-plugdev_gid = grp.getgrnam('plugdev').gr_gid
+try:
+  docker_gid = grp.getgrnam('docker').gr_gid
+except:
+  docker_gid = 0
+  
+try:
+  input_gid = grp.getgrnam('input').gr_gid
+except:
+  input_gid = 0
+try:
+  plugdev_gid = grp.getgrnam('plugdev').gr_gid
+except:
+  plugdev_gid = 0
 home = os.path.expanduser("~")
 user = pwd.getpwuid(os.getuid())[0]
 
