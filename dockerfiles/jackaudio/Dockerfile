@@ -1,5 +1,5 @@
 ARG UBUNTU18_04
-FROM registry.mandy-home.duckdns.org/mandy91/ubuntu-x11-hw:$UBUNTU18_04
+FROM ohmymndy/ubuntu-x11-hw:$UBUNTU18_04
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 

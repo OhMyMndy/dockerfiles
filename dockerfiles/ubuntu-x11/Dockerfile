@@ -1,6 +1,6 @@
 ARG VERSION
 ARG DOCKER_IMAGE_VERSION
-FROM registry.mandy-home.duckdns.org/mandy91/ubuntu:${DOCKER_IMAGE_VERSION}-$VERSION
+FROM ohmymndy/ubuntu:${DOCKER_IMAGE_VERSION}-$VERSION
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 

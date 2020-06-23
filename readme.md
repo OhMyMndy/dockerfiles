@@ -1,6 +1,6 @@
 # Dockerfiles
 
-[![CircleCI](https://circleci.com/gh/Mandy91/dockerfiles.svg?style=svg)](https://circleci.com/gh/Mandy91/dockerfiles)
+[![CircleCI](https://circleci.com/gh/OhMyMndy/dockerfiles.svg?style=svg)](https://circleci.com/gh/OhMyMndy/dockerfiles)
 
 ## Setting the project up
 
