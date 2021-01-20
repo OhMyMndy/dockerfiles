@@ -29,82 +29,15 @@ docker_image_version = 0.1
 
 default_build_args.update({
    "DOCKER_IMAGE_VERSION": f"{docker_image_version}",
-   "UBUNTU19_10": f"{docker_image_version}-19.10",
-   "UBUNTU18_04": f"{docker_image_version}-18.04",
    "UBUNTU20_04": f"{docker_image_version}-20.04",
 })
-
-
-ubuntu1804 = create_service(
-  image_name='ubuntu',
-  version=f'{docker_image_version}-18.04',
-  build_args={**default_build_args, **{"VERSION": "18.04"}},
-  environment={**default_build_args, **{"VERSION": "18.04"}},
-  volumes=global_volumes
-)
-
-gitlab = create_service(
-  image_name='gitlab',
-  version=f'{docker_image_version}',
-  extends=ubuntu1804,
-  volumes={
-    "./storage/gitlab/config": "/etc/gitlab",
-    "./storage/gitlab/logs": "/var/log/gitlab",
-    "./storage/gitlab/data": "/var/opt/gitlab",
-    }
-)
-gitlab['ports'] = [
-  "8880:80",
-  "2222:22"
-]
-
-ubuntu1804_x11 = create_service(
-  image_name='ubuntu-x11',
-  version=f'{docker_image_version}-18.04',
-  environment=x11_environment,
-  volumes=x11_volumes,
-  extends=ubuntu1804,
-  devices= ['/dev/dri'],
-)
-
-ubuntu1804_x11_hw = create_service(
-  image_name='ubuntu-x11-hw',
-  version=f'{docker_image_version}-18.04',
-  extends=ubuntu1804_x11
-)
-
-ubuntu1910 = create_service(
-  image_name='ubuntu',
-  version=f'{docker_image_version}-19.10',
-  build_args={"VERSION": "19.10"},
-  environment={"VERSION": "19.10"},
-  extends=ubuntu1804
-)
-
-
-ubuntu1910_x11 = create_service(
-  image_name='ubuntu-x11',
-  version=f'{docker_image_version}-19.10',
-  environment=x11_environment,
-  volumes=x11_volumes,
-  extends=ubuntu1910,
-  devices= ['/dev/dri']
-)
-
-ubuntu1910_x11_hw = create_service(
-  image_name='ubuntu-x11-hw',
-  version=f'{docker_image_version}-19.10',
-  extends=ubuntu1910_x11
-)
-
-
 
 ubuntu2004 = create_service(
   image_name='ubuntu',
   version=f'{docker_image_version}-20.04',
-  build_args={"VERSION": "20.04"},
-  environment={"VERSION": "20.04"},
-  extends=ubuntu1804
+  build_args={**default_build_args, **{"VERSION": "20.04"}},
+  environment={**default_build_args, **{"VERSION": "20.04"}},
+  volumes=global_volumes
 )
 
 
@@ -124,16 +57,32 @@ ubuntu2004_x11_hw = create_service(
 
 )
 
+
+gitlab = create_service(
+  image_name='gitlab',
+  version=f'{docker_image_version}',
+  extends=ubuntu2004,
+  volumes={
+    "./storage/gitlab/config": "/etc/gitlab",
+    "./storage/gitlab/logs": "/var/log/gitlab",
+    "./storage/gitlab/data": "/var/opt/gitlab",
+    }
+)
+gitlab['ports'] = [
+  "8880:80",
+  "2222:22"
+]
+
 wine = create_service(
   image_name='wine',
   version=f'{docker_image_version}',
-  extends=ubuntu1910_x11
+  extends=ubuntu2004_x11
 )
 
 wine5 = create_service(
   image_name='wine5',
   version=f'{docker_image_version}',
-  extends=ubuntu1910_x11,
+  extends=ubuntu2004_x11,
   environment={
     "QT_X11_NO_MITSHM": 1
   }
@@ -143,7 +92,7 @@ wine5 = create_service(
 mobaxterm = create_service(
   image_name='mobaxterm',
   version=f'{docker_image_version}',
-  extends=ubuntu1910_x11_hw
+  extends=ubuntu2004_x11_hw
 )
 
 firefox_volumes = {
@@ -154,7 +103,7 @@ firefox = create_service(
   image_name='firefox',
   version=f'{docker_image_version}',
   volumes=firefox_volumes, 
-  extends=ubuntu1910_x11_hw
+  extends=ubuntu2004_x11_hw
 )
 firefox['network_mode'] = 'service:vpn'
 
@@ -167,7 +116,7 @@ filezilla = create_service(
   image_name='filezilla',
   version=f'{docker_image_version}',
   volumes=filezilla_volumes, 
-  extends=ubuntu1910_x11_hw
+  extends=ubuntu2004_x11_hw
 )
 filezilla['network_mode'] = 'service:vpn'
 
@@ -179,7 +128,7 @@ system_tools = create_service(
   image_name='system-tools',
   version=f'{docker_image_version}',
   volumes=system_tools_volumes,
-  extends=ubuntu1910_x11_hw
+  extends=ubuntu2004_x11_hw
 )
 system_tools['network_mode'] = 'service:vpn'
 
@@ -190,7 +139,7 @@ dosbox_volumes = {
 dosbox = create_service(
   image_name='dosbox',
   version=f'{docker_image_version}',
-  extends=ubuntu1910_x11_hw,
+  extends=ubuntu2004_x11_hw,
   volumes=dosbox_volumes
 )
 
@@ -211,7 +160,7 @@ retropie_volumes = {
 retropie = create_service(
   image_name='retropie',
   version=f'{docker_image_version}',
-  extends=ubuntu1910_x11_hw,
+  extends=ubuntu2004_x11_hw,
   volumes=retropie_volumes,
   devices=[
     "/dev/dri",
@@ -237,7 +186,7 @@ retroarch_volumes = {
 retroarch = create_service(
   image_name='retroarch',
   version=f'{docker_image_version}',
-  extends=ubuntu1910_x11_hw,
+  extends=ubuntu2004_x11_hw,
   volumes=retroarch_volumes,
   devices=[
     "/dev/dri",
@@ -253,7 +202,7 @@ php_volumes = {
 php = create_service(
   image_name='php',
   version=f'{docker_image_version}',
-  extends=ubuntu1910_x11,
+  extends=ubuntu2004_x11,
   volumes=php_volumes
 )
 
@@ -265,7 +214,7 @@ chrome = create_service(
   image_name='chrome',
   version=f'{docker_image_version}',
   volumes=chrome_volumes, 
-  extends=ubuntu1910_x11_hw
+  extends=ubuntu2004_x11_hw
 )
 chrome['network_mode'] = 'service:vpn'
 chrome['security_opt'] = [ "seccomp=./seccomp/chrome.json" ]
@@ -275,7 +224,7 @@ vlc = create_service(
   version=f'{docker_image_version}',
   environment=x11_environment,
   volumes=x11_volumes,
-  extends=ubuntu1910_x11_hw
+  extends=ubuntu2004_x11_hw
 )
 
 
@@ -285,7 +234,7 @@ quicktile = create_service(
   volumes={
     f"{home}/.config/quiocktile.cfg": f"{home}/.config/quiocktile.cfg"
   },
-  extends=ubuntu1910_x11)
+  extends=ubuntu2004_x11)
 
 
 upsource = create_service(
@@ -314,7 +263,7 @@ upsource["deploy"] = {
 bitwarden = create_service(
   image_name='bitwarden',
   version=f'{docker_image_version}',
-  extends=ubuntu1804_x11_hw,
+  extends=ubuntu2004_x11_hw,
   volumes={
     "./storage/bitwarden": f"{home}/.config/Bitwarden"
   }
@@ -325,7 +274,7 @@ bitwarden['network_mode'] = 'service:vpn'
 jackaudio = create_service(
   image_name='jackaudio',
   version=f'{docker_image_version}',
-  extends=ubuntu1804_x11_hw,
+  extends=ubuntu2004_x11_hw,
 )
 
 
@@ -333,7 +282,7 @@ jackaudio = create_service(
 nomachine = create_service(
   image_name='nomachine',
   version=f'{docker_image_version}',
-  extends=ubuntu1910_x11_hw,
+  extends=ubuntu2004_x11_hw,
   volumes={
     "./storage/ssh": f"{home}/.ssh",
     f"{home}/Downloads": f"{home}/Downloads",
@@ -347,7 +296,7 @@ nomachine['network_mode'] = 'service:vpn'
 quod_libet = create_service(
   image_name='quod-libet',
   version=f'{docker_image_version}',
-  extends=ubuntu1910,
+  extends=ubuntu2004,
   volumes={
     # "./storage/ssh": f"{home}/.ssh",
     # f"{home}/Downloads": f"{home}/Downloads",
@@ -366,7 +315,7 @@ vpn = create_service(
   version=f'{docker_image_version}',
   volumes={ "./etc/openvpn": "/etc/openvpn",
          "./storage/ssh": f"{home}/.ssh"},
-  extends=ubuntu1910
+  extends=ubuntu2004
 )
 vpn['privileged'] = True
 vpn['command'] = 'sleep infinity'
@@ -379,7 +328,7 @@ crafty = create_service(
     "./storage/crafty/certs": f"{home}/crafty/crafty-web/app/web/certs",
     "./storage/crafty/minecraft": f"{home}/Minecraft"
   },
-  extends=ubuntu1910
+  extends=ubuntu2004
 )
 crafty['ports'] = [
   "8000:8000",
@@ -426,7 +375,7 @@ code_server['ports'] = ['8880:8080']
 mkdocs = create_service(
   image_name='mkdocs',
   version=f'{docker_image_version}',
-  extends=ubuntu1910,
+  extends=ubuntu2004,
   volumes={"./storage/mkdocs": f"{home}/mkdocs"}
 )
 mkdocs['ports'] = ['8080:8000']
@@ -493,7 +442,7 @@ rclone_browser_volumes = {
 rclone_browser = create_service(
   image_name='rclone-browser',
   version=f'{docker_image_version}',
-  extends=ubuntu1910_x11,
+  extends=ubuntu2004_x11,
   volumes=rclone_browser_volumes
 )
 
@@ -501,12 +450,6 @@ rclone_browser = create_service(
 docker_compose = {
   "version": "3.7",
   "services": {
-    "ubuntu18.04": render_service(ubuntu1804),
-    "ubuntu18.04-x11": render_service(ubuntu1804_x11),
-    "ubuntu18.04-x11-hw": render_service(ubuntu1804_x11_hw),
-    "ubuntu19.10": render_service(ubuntu1910),
-    "ubuntu19.10-x11": render_service(ubuntu1910_x11),
-    "ubuntu19.10-x11-hw": render_service(ubuntu1910_x11_hw),
     "ubuntu20.04": render_service(ubuntu2004),
     "ubuntu20.04-x11": render_service(ubuntu2004_x11),
     "ubuntu20.04-x11-hw": render_service(ubuntu2004_x11_hw),
@@ -520,14 +463,14 @@ docker_compose = {
     "mkdocs": render_service(mkdocs),
     "tmux": render_service(tmux),
     "nomachine": render_service(nomachine),
-    "code-server": render_service(code_server),
+    # "code-server": render_service(code_server),
     "gitlab": render_service(gitlab),
     "wine": render_service(wine),
     "wine5": render_service(wine5),
     "mobaxterm": render_service(mobaxterm),
     "dosbox": render_service(dosbox),
     "quicktile": render_service(quicktile),
-    "crafty": render_service(crafty),
+    # "crafty": render_service(crafty),
     "php": render_service(php),
     "jackaudio": render_service(jackaudio),
     "quod-libet": render_service(quod_libet),

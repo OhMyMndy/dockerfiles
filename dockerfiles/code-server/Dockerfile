@@ -12,7 +12,7 @@ ENV SHELL=bash
 ENV HOME=/config
 ENV USER=abc
 
-RUN curl -sSL https://deb.nodesource.com/setup_12.x | sudo -E bash - >/dev/null
+RUN curl -sSL https://deb.nodesource.com/setup_12.x | bash - >/dev/null
 RUN apt-get update -qq && apt-get install -y -qq \
 	curl \
 	readline-common \

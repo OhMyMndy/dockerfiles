@@ -1,5 +1,5 @@
-ARG UBUNTU19_10
-FROM ohmymndy/ubuntu:$UBUNTU19_10
+ARG UBUNTU20_04
+FROM ohmymndy/ubuntu:$UBUNTU20_04
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
@@ -10,7 +10,7 @@ RUN mkdir -p "$HOME"/{.wine,.wine64} \
 RUN dpkg --add-architecture i386 \
 	&& apt-get update \
 	&& DEBIAN_FRONTEND=noninteractive \
-	apt-get install -y \
+	apt-get install -o APT::Immediate-Configure=false -y \
 		wine \
 		wine32 \
 		wine64 \

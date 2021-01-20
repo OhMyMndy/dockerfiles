@@ -1,5 +1,5 @@
-ARG UBUNTU18_04
-FROM ohmymndy/ubuntu-x11:$UBUNTU18_04
+ARG UBUNTU20_04
+FROM ohmymndy/ubuntu-x11:$UBUNTU20_04
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
