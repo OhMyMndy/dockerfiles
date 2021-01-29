@@ -66,7 +66,6 @@ x-default: &default
     - /usr/share/icons:/usr/share/icons:ro
     #- /usr/share/fontconfig:/usr/share/fontconfig:ro
     - $HOME/.local/share/fonts:$HOME/.local/share/fonts:ro
-    - lxcfs:/lxcfs
   env_file: .env
 
 services:
@@ -102,14 +101,6 @@ services:
     build:
       context: ./dockerfiles/alpine
     image: mandy91/alpine:${DOCKER_IMAGE_VERSION}-19.10
-
-  lxcfs:
-    extends: alpine
-    image: mandy91/lxcfs:${DOCKER_IMAGE_VERSION}-19.10
-    build:
-      context: ./dockerfiles/lxcfs
-    privileged: true
-    mem_limit: 50M
 
    
 
@@ -447,5 +438,4 @@ volumes:
   retroarch:
   retropie-skyscraper:
   retropie-emulationstation:
-  lxcfs:
 EOF
