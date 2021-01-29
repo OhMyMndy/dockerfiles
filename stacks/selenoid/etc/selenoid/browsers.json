@@ -1,0 +1,24 @@
+  {
+       "firefox": {
+               "default": "58.0",
+               "versions": {
+                       "58.0": {
+                               "image": "selenoid/firefox:58.0",
+                               "port": "4444",
+                               "path": "/wd/hub",
+                               "tmpfs": {"/tmp":"size=512m"}
+                       }
+               }
+       },
+       "chrome": {
+               "default": "65.0",
+               "versions": {
+                       "65.0": {
+                               "image": "selenoid/chrome:65.0",
+                               "port": "4444",
+                               "tmpfs": {"/tmp":"size=512m"},
+                               "shmSize" : 1073741824
+                       }
+               }
+       }
+}

@@ -75,8 +75,8 @@ services:
       context: ./dockerfiles/ubuntu
       args:
         - DOCKER_IMAGE_VERSION=${DOCKER_IMAGE_VERSION}
-        - UBUNTU19_10=0.1-19.10
-        - UBUNTU18_04=0.1-18.04
+        - UBUNTU20_04=0.1-19.10
+        - UBUNTU20_04=0.1-18.04
         - VERSION=19.10
         - USER=${user}
     image: mandy91/ubuntu:${DOCKER_IMAGE_VERSION}-19.10

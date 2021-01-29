@@ -20,9 +20,11 @@ ARG OVERLAY_ARCH="amd64"
 
 ADD https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz /tmp/
 
+# hadolint ignore=SC2015
 RUN [[ "$VERSION" != '18.04' ]] && tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C / --exclude="./bin" && \
     tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C /usr ./bin || true
 
+# hadolint ignore=SC2015
 RUN [[ "$VERSION" = '18.04' ]] && tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C / || true
 
 COPY shared/root/ /

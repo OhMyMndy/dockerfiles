@@ -37,13 +37,16 @@ jobs:
 
       - run:
           name: Shellcheck
+          when: always
           command: .circleci/shellcheck.sh
 
 
       - run:
           name: Hadolint
+          when: always
           command: .circleci/hadolint.sh
 
       - run:
           name: Yamllint
+          when: always
           command: .circleci/yamllint.sh

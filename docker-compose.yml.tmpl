@@ -1,0 +1,194 @@
+version: "3.7"
+
+# replace short volume with long volume:
+# "- (.*):(.*):[row]+"    ->    "- type: bind\n    source: $1\n    target: $2"
+
+{{ $docker_image_version := 0.1}}
+x-build-args: &build-args
+  - DOCKER_IMAGE_VERSION: '{{ $docker_image_version }}'
+  
+x-default-env: &default-env
+  - PGID: '{{ .Env.UID }}'
+  - PUID: '{{ .Env.GID }}'
+  - USER: '{{ .Env.USER }}'
+  - DOCKER_GID: {{ awk "-F:" "$1 == \"docker\" {print $3}" "/etc/group" }}
+
+x-default-volumes: &default-volumes
+{{ if (file.IsDir "/var/lib/lxcfs/proc") }}
+  - type: bind
+    source: /var/lib/lxcfs/proc/cpuinfo
+    target: /proc/cpuinfo
+  - type: bind
+    source: /var/lib/lxcfs/proc/diskstats
+    target: /proc/diskstats
+  - type: bind
+    source: /var/lib/lxcfs/proc/meminfo
+    target: /proc/meminfo
+  - type: bind
+    source: /var/lib/lxcfs/proc/stat
+    target: /proc/stat
+  - type: bind
+    source: /var/lib/lxcfs/proc/swaps
+    target: /proc/swaps
+  - type: bind
+    source: /var/lib/lxcfs/proc/uptime
+    target: /proc/uptime
+{{ end }}
+{{ if (file.Exists "/etc/timezone") }}
+  - type: bind
+    source: /etc/timezone
+    target: /etc/timezone
+{{ end }}
+{{ if (file.Exists "/etc/localtime") }}
+  - type: bind
+    source: /etc/localtime
+    target: /etc/localtime
+{{ end }}
+{{ if (file.Exists "/etc/machine-id") }}
+  - type: bind
+    source: /etc/machine-id
+    target: /etc/machine-id
+{{ end }}
+
+x-default-x-volumes: &default-x-volumes
+  - type: bind
+    source: /tmp/.X11-unix
+    target: /tmp/.X11-unix
+  - type: bind
+    source: /run/user/{{ .Env.UID }}/pulse
+    target: /run/user/{{ .Env.UID }}/pulse
+  - type: bind
+    source: ./etc/pulse/pulse-client.conf
+    target: /etc/pulse/client.conf
+  - type: bind
+    source: {{ .Env.HOME }}/.config/fontconfig
+    target: {{ .Env.HOME }}/.config/fontconfig
+  - type: bind
+    source: {{ .Env.HOME }}/.config/gtk-3.0
+    target: {{ .Env.HOME }}/.config/gtk-3.0
+  - type: bind
+    source: {{ .Env.HOME }}/.Xresources
+    target: {{ .Env.HOME }}/.Xresources
+  - type: bind
+    source: ./etc/ssl/certificates
+    target: /etc/ssl/certificates
+  - type: bind
+    source: {{ .Env.HOME }}/.local/share/fonts
+    target: {{ .Env.HOME }}/.local/share/fonts
+
+x-default-x-env: &default-x-env
+  DISPLAY: ${DISPLAY}
+
+x-default-service: &default-service
+  init: true
+  restart: unless-stopped
+
+services:
+  #####################
+  # Ubuntu containers #
+  #####################
+  {{ range slice "18.04" "20.04" }}
+  ubuntu-{{ . }}:
+    <<: *default-service
+    image: ohmymndy/ubuntu:{{ $docker_image_version }}-{{ . }}
+    build:
+      args: 
+        <<: *build-args
+        <<: *default-env
+        VERSION: '{{ . }}'
+      context: dockerfiles
+      dockerfile: ubuntu/Dockerfile
+      target: ubuntu
+    environment: 
+      <<: *default-env
+      VERSION: '{{ . }}'
+    volumes: *default-volumes
+
+  ubuntu-x11-{{ . }}:
+    <<: *default-service
+    image: ohmymndy/ubuntu-x11:{{ $docker_image_version }}-{{ . }}
+    build:
+      args: 
+        <<: *build-args
+        <<: *default-env
+        VERSION: '{{ . }}'
+      context: dockerfiles
+      dockerfile: ubuntu/Dockerfile
+      target: ubuntu-x11
+    environment: 
+      <<: *default-env
+      VERSION: '{{ . }}'
+    volumes: *default-volumes
+  ubuntu-x11-hw-{{ . }}:
+    <<: *default-service
+    image: ohmymndy/ubuntu-x11-hw-:{{ $docker_image_version }}-{{ . }}
+    build:
+      args: 
+        <<: *build-args
+        <<: *default-env
+        VERSION: '{{ . }}'
+      context: dockerfiles
+      dockerfile: ubuntu/Dockerfile
+      target: ubuntu-x11-hw
+    environment: 
+      <<: *default-env
+      <<: *default-x-env
+      VERSION: '{{ . }}'
+    volumes: *default-volumes
+  {{end}}
+
+  firefox:
+    <<: *default-service
+    image: ohmymndy/firefox:{{ $docker_image_version }}
+    build:
+      args: 
+        <<: *build-args
+        VERSION: '20.04'
+      context: dockerfiles
+      dockerfile: ubuntu/Dockerfile
+      target: firefox
+    environment: 
+      <<: *default-env
+      <<: *default-x-env
+    volumes:
+      <<: *default-volumes
+      <<: *default-x-volumes
+    devices:
+      - /dev/dri
+
+  #####################
+  # Alpine containers #
+  #####################
+  alpine:
+    <<: *default-service
+    image: ohmymndy/alpine:{{ $docker_image_version }}
+    build:
+      args: 
+        <<: *build-args
+        <<: *default-env
+      context: dockerfiles
+      dockerfile: alpine/Dockerfile
+      target: alpine
+    environment: 
+      <<: *default-env
+  glances:
+    <<: *default-service
+    image: ohmymndy/glances:{{ $docker_image_version }}
+    build:
+      args: 
+        <<: *build-args
+        <<: *default-env
+      context: dockerfiles
+      dockerfile: alpine/Dockerfile
+      target: glances
+    volumes:
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    environment: 
+      <<: *default-env
+ 
+
+
+
+
