@@ -1,4 +1,4 @@
-FROM linuxserver/code-server
+FROM linuxserver/code-server:v3.8.0
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
 
@@ -50,6 +50,7 @@ USER $USER
 
 RUN curl -LsS https://raw.githubusercontent.com/Mandy91/dotfiles/master/installers/apps/code.sh | bash -
 
+# hadolint ignore=DL3003
 RUN cd /tmp && git clone https://github.com/Mandy91/dotfiles.git && cd dotfiles && /tmp/dotfiles/installers/ubuntu.sh --dev --php && rm -rf /tmp/dotfiles
 
 USER root
