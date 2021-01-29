@@ -5,7 +5,7 @@ services:
     image: aerokube/selenoid
     volumes:
       - ./etc/selenoid/browsers.json:/etc/selenoid/browsers.json:ro
-    
+
   selenoid-ui:
     image: aerokube/selenoid-ui
     command: ["--selenoid-uri=http://selenoid:4444"]
