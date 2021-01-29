@@ -15,10 +15,10 @@ RUN dpkg --add-architecture i386 \
 	&& apt-key add /tmp/winehq.key \
 	&& rm /tmp/winehq.key
 
-RUN add-apt-repository -y 'deb https://dl.winehq.org/wine-builds/ubuntu/ eoan main'
+RUN add-apt-repository -y 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main'
 
 
-RUN install-package --install-recommends winehq-stable
+RUN install-package --install-recommends winehq-stable -o APT::Immediate-Configure=false
 
 RUN install-package winetricks winbind
 RUN install-package --no-install-recommends zenity 
