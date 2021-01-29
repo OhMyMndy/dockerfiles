@@ -7,8 +7,16 @@ import pwd
 import grp
 import subprocess
 import yaml
-uid = os.getuid()
-gid = os.getgid()
+try:
+  uid = os.environ['UID']
+except:
+  uid = os.getuid()
+
+try:
+  gid = os.environ['GID'] # os.getgid()
+except:
+  gid = os.getgid()
+
 try:
   docker_gid = grp.getgrnam('docker').gr_gid
 except:
@@ -22,17 +30,26 @@ try:
   plugdev_gid = grp.getgrnam('plugdev').gr_gid
 except:
   plugdev_gid = 0
-home = os.path.expanduser("~")
-user = pwd.getpwuid(os.getuid())[0]
+
+try:  
+  home = os.environ['HOME']
+except:
+  home = "/home/mandy"
+try:
+  user = os.environ['USER']
+except:
+  user = "mandy"
 
 
 
 x11_environment = {
-  "DISPLAY": os.environ['DISPLAY'],
   "DOCKER_GID": docker_gid,
   "INPUT_GROUP_ID": input_gid,
   "PLUGDEV_GROUP_ID": plugdev_gid
 }
+
+if 'DISPLAY' in os.environ:
+  x11_environment["DISPLAY"] = os.environ['DISPLAY']
 
 default_build_args = {
    "USER": f"{user}",
@@ -139,7 +156,7 @@ global_volumes = {
   "/etc/machine-id": "/etc/machine-id:ro",
 }
 
-global_volumes = {k:v for k,v in global_volumes.items() if os.path.isfile(k) or os.path.isdir(k)}
+# global_volumes = {k:v for k,v in global_volumes.items() if os.path.isfile(k) or os.path.isdir(k)}
 
 
 

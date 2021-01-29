@@ -14,16 +14,10 @@ from os.path import dirname
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 from docker_compose_helper import x11_environment, default_build_args, create_service, render_service, global_volumes, x11_volumes, render_config
+from docker_compose_helper import uid, gid, docker_gid, input_gid, plugdev_gid, home, user
 
-pp = pprint.PrettyPrinter(indent=4)
+#pp = pprint.PrettyPrinter(indent=4)
 
-uid = os.getuid()
-gid = os.getgid()
-docker_gid = grp.getgrnam('docker').gr_gid
-input_gid = grp.getgrnam('input').gr_gid
-plugdev_gid = grp.getgrnam('plugdev').gr_gid
-home = os.path.expanduser("~")
-user = pwd.getpwuid(os.getuid())[0]
 
 docker_image_version = 0.1
 
@@ -455,7 +449,6 @@ tiddlywiki = create_service(
   }
 )
 tiddlywiki['ports'] = ["8090:8080"]
-
 
 jupyter = create_service(
   image_name='jupyter',
