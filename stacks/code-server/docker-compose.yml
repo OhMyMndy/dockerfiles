@@ -1,0 +1,49 @@
+services:
+
+  traefik:
+    image: traefik:v2.3
+    restart: unless-stopped
+    init: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./etc/traefik:/etc/traefik
+    ports:
+      - 80:80
+      - 443:443
+    labels:
+      - "traefik.http.routers.traefik.rule=Host(`traefik.local`)"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.enable=true"
+   
+  code:
+    build: .
+    image: ohmymndy/code:latest
+    privileged: true
+    cpus: '2'
+    mem_limit: 4000m
+    init: true
+    container_name: code
+    healthcheck:
+      interval: 10s
+      retries: 2
+      test: curl --silent --fail --get --max-time 3 --insecure --connect-timeout 2 http://localhost:8443/ || exit 1
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${GUID:-1000}
+      - TZ=${TZ:-Europe/Brussels}
+      - PROXY_DOMAIN=code.local
+      - PASSWORD=${CODE_PASSWORD:-}
+      - SUDO_PASSWORD=${CODE_PASSWORD:-}
+    volumes:
+      - ./storage/code:/config
+      - /var/run/docker.sock:/var/run/docker-host.sock
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.code.rule=Host(`code.local`)"
+      - "traefik.http.services.code.loadbalancer.server.port=8443"
+      - "traefik.http.middlewares.code.headers.customrequestheaders.Service-Worker-Allowed=/"
+      - "traefik.http.middlewares.code.headers.customresponseheaders.Service-Worker-Allowed=/"
+      - "traefik.http.middlewares.replaceslash.replacepathregex.regex=/+"
+      - "traefik.http.middlewares.replaceslash.replacepathregex.replacement=/"
+      - "traefik.http.routers.code.middlewares=replaceslash,code"

@@ -1,0 +1,23 @@
+entryPoints:
+  web:
+    address: ":80"
+    # http:
+    #   redirections:
+    #     entryPoint:
+    #       to: websecure
+  websecure:
+    address: ":443"
+
+log:
+  level: "DEBUG"
+
+api:
+  insecure: true
+  dashboard: true
+
+serversTransport:
+  insecureSkipVerify: true
+
+providers:
+  docker:
+    exposedByDefault: false
