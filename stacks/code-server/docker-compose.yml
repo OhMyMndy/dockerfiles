@@ -1,7 +1,7 @@
 services:
 
   traefik:
-    image: traefik:v2.3
+    image: traefik:v2.4
     restart: unless-stopped
     init: true
     volumes:
@@ -32,8 +32,8 @@ services:
       - PGID=${GUID:-1000}
       - TZ=${TZ:-Europe/Brussels}
       - PROXY_DOMAIN=code.local
-      - PASSWORD=${CODE_PASSWORD:-}
-      - SUDO_PASSWORD=${CODE_PASSWORD:-}
+      - PASSWORD=${CODE_PASSWORD:-password}
+      - SUDO_PASSWORD=${CODE_PASSWORD:-password}
     volumes:
       - ./storage/code:/config
       - /var/run/docker.sock:/var/run/docker-host.sock
