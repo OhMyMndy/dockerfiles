@@ -1,5 +1,5 @@
 ARG VERSION=non-existing
-FROM ubuntu:$VERSION
+FROM ubuntu:$VERSION as builder
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
@@ -57,3 +57,113 @@ RUN install-package --no-install-recommends readline-common sudo less file cron 
 
 
 ENTRYPOINT ["/init"]
+
+
+FROM builder as ubuntu
+
+
+
+FROM builder as ubuntu-x11
+
+RUN install-package \
+	hicolor-icon-theme \
+	adwaita-qt \
+	adwaita-icon-theme \
+	gnome-themes-standard \
+	libcanberra-gtk* \
+	libgl1-mesa-dri \
+	libgl1-mesa-glx \
+	libpango1.0-0 \
+	libv4l-0 \
+	libpulse0 \
+	libasound2 \
+	apulse \
+	fonts-noto-color-emoji \
+	fonts-noto \
+	fonts-lato \
+	dbus-x11 \
+	dbus \
+	gtk2-engines-pixbuf \
+	--no-install-recommends
+	
+COPY ubuntu-x11/root/ /
+
+
+
+FROM builder as ubuntu-x11-hw
+
+USER root
+
+RUN install-package \
+	xinput \
+	usbutils \
+	libxcb-xinput0 \
+	xserver-xorg-video-intel \
+	i965-va-driver \
+	xserver-xorg-video-ati \
+	libgl1-mesa-dri \
+	libgl1-mesa-glx \
+	xterm \
+	xorg \
+   --no-install-recommends
+  
+RUN usermod -aG audio,video,root,input "$USER"
+
+
+FROM ubuntu-x11-hw as wine5
+
+USER root
+RUN mkdir -p "$HOME"/{.wine,.wine64} \
+	&& chown -R "$USER":"$USER" "$HOME"
+
+RUN install-package curl gnupg
+
+
+RUN dpkg --add-architecture i386 \
+	&& curl -LsS https://dl.winehq.org/wine-builds/winehq.key -o /tmp/winehq.key \
+	&& apt-key add /tmp/winehq.key \
+	&& rm /tmp/winehq.key
+
+RUN add-apt-repository -y 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main'
+
+
+RUN install-package --install-recommends winehq-stable -o APT::Immediate-Configure=false
+
+RUN install-package winetricks winbind
+RUN install-package --no-install-recommends zenity 
+
+RUN mkdir -p "/run/user/1000/$USER" \
+	&& chown "$USER":"$USER" -R "/run/user/1000/$USER" \
+	&& chmod 700 -R "/run/user/1000/$USER"
+
+
+USER $USER
+
+VOLUME $HOME/.wine64
+VOLUME $HOME/.wine
+
+USER root
+CMD s6-setuidgid $USER wine
+
+
+
+FROM ubuntu-x11-hw as firefox
+
+
+
+RUN mkdir -p $HOME/{Downloads,.mozilla,.ssh} \
+    && chown -R $USER:$USER $HOME
+
+RUN install-package --no-install-recommends ffmpeg firefox
+
+RUN echo 'pref("browser.tabs.remote.autostart", false);' >> /etc/firefox/syspref.js
+RUN echo 'pref("security.enterprise_roots.enabled", true);' >> /etc/firefox/syspref.js
+
+
+USER $USER
+
+VOLUME $USER/.mozilla
+
+USER root
+
+CMD s6-setuidgid $USER firefox

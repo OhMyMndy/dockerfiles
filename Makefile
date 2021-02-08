@@ -6,7 +6,7 @@ endif
 
 -include Makefile.local.mk
 
-.PHONY: all
+.PHONY: all gomplate
 all:
 
 .PHONY: clean
@@ -87,3 +87,19 @@ retropie-run:
 	$(MAKE) -C dockerfiles/retropie retropie-run
 retropie-list-packages:
 	$(MAKE) -C dockerfiles/retropie retropie-list-packages
+
+gomplate:
+	docker run --rm -it -v /etc/timezone:/etc/timezone:ro \
+		-v /etc/group:/hostfs/etc/group:ro \
+		-v $$PWD:/src \
+		-v $$HOME:$$HOME:ro \
+		-e DOCKER_IMAGE_VERSION=0.1 \
+		-e USER=$$USER \
+		-e HOME=$$HOME \
+		-e DISPLAY=$$DISPLAY \
+		-e UID=$$(id -u) \
+		-e GID=$$(id -g) \
+		hairyhenderson/gomplate:v3-alpine \
+		--plugin awk=/usr/bin/awk \
+		--plugin tr=/usr/bin/tr \
+		-f /src/docker-compose.yml.tmpl > docker-compose.yml
