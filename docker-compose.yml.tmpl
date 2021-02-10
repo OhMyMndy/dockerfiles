@@ -9,7 +9,8 @@ version: "3.7"
         - PGID={{ env.Getenv "UID" }}
         - PUID={{ env.Getenv "GID" }}
         - USER={{ env.Getenv "USER" }}
-        - DOCKER_GID='{{ awk "-F:" "$1 == \"docker\" {printf $3}" "/hostfs/etc/group" }}'
+        - DOCKER_GID={{ awk "-F:" "$1 == \"docker\" {printf $3}" "/hostfs/etc/group" }}
+        - KEEP_APT_CACHE=1
 {{- end -}}
 
 {{- define "DefaultEnv" -}}
@@ -181,8 +182,30 @@ services:
     volumes:
       {{ tmpl.Exec "DefaultVolumes" }}
       {{ tmpl.Exec "DefaultXVolumes" }}
-    devices:
-      - /dev/dri
+    #devices:
+      #- /dev/dri
+    networks:
+      - default
+      - x11
+
+  nomachine:
+    {{ tmpl.Exec "DefaultService" }}
+    image: ohmymndy/nomachine:{{ env.Getenv "DOCKER_IMAGE_VERSION" }}
+    build:
+      args: 
+        {{ tmpl.Exec "DefaultBuildArgs" . }}
+        - VERSION=20.04
+      context: dockerfiles
+      dockerfile: ubuntu/Dockerfile
+      target: nomachine
+    environment: 
+      {{ tmpl.Exec "DefaultEnv" }}
+      {{ tmpl.Exec "DefaultXEnv" }}
+    volumes:
+      {{ tmpl.Exec "DefaultVolumes" }}
+      {{ tmpl.Exec "DefaultXVolumes" }}
+    #devices:
+    #  - /dev/dri
     networks:
       - default
       - x11
@@ -204,8 +227,8 @@ services:
     volumes:
       {{ tmpl.Exec "DefaultVolumes" }}
       {{ tmpl.Exec "DefaultXVolumes" }}
-    devices:
-      - /dev/dri
+    #devices:
+    #  - /dev/dri
     networks:
       - default
       - x11

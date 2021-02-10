@@ -16,3 +16,4 @@ etc/retroarch
 .vagrant
 tmp.*
 *.pyc
+docker-compose.yml

@@ -2,8 +2,16 @@
 
 set -e
 
+if [[ "$KEEP_APT_CACHE" = '1' ]]; then
+    rm -f /etc/apt/apt.conf.d/docker-clean
+fi
+
 apt-get update -qq
+
 # shellcheck disable=SC2068
 DEBIAN_FRONTEND=noninteractive apt-get install -y -qq $@
-apt-get clean -y
-rm -rf /tmp/*
+
+if [[ "$KEEP_APT_CACHE" != '1' ]]; then
+    apt-get clean -y
+    rm -rf /var/lib/apt/lists/*
+fi

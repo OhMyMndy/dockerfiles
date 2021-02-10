@@ -1,5 +1,5 @@
 ARG VERSION=non-existing
-FROM ubuntu:$VERSION as builder
+FROM ubuntu:$VERSION as ubuntu
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
@@ -46,7 +46,7 @@ VOLUME $HOME/.ssh
 WORKDIR $HOME
 
 
-RUN install-package --no-install-recommends readline-common sudo less file cron vim-tiny iputils-ping
+RUN --mount=type=cache,target=/var/cache/apt install-package --no-install-recommends readline-common sudo less file cron vim-tiny iputils-ping
 
 # RUN apt-get update \
 # 	&& add-apt-repository ppa:git-core/ppa \
@@ -59,13 +59,13 @@ RUN install-package --no-install-recommends readline-common sudo less file cron 
 ENTRYPOINT ["/init"]
 
 
-FROM builder as ubuntu
+FROM ubuntu as ubuntu
 
 
 
-FROM builder as ubuntu-x11
+FROM ubuntu as ubuntu-x11
 
-RUN install-package \
+RUN --mount=type=cache,target=/var/cache/apt install-package \
 	hicolor-icon-theme \
 	adwaita-qt \
 	adwaita-icon-theme \
@@ -90,11 +90,11 @@ COPY ubuntu-x11/root/ /
 
 
 
-FROM builder as ubuntu-x11-hw
+FROM ubuntu as ubuntu-x11-hw
 
 USER root
 
-RUN install-package \
+RUN --mount=type=cache,target=/var/cache/apt install-package \
 	xinput \
 	usbutils \
 	libxcb-xinput0 \
@@ -116,7 +116,7 @@ USER root
 RUN mkdir -p "$HOME"/{.wine,.wine64} \
 	&& chown -R "$USER":"$USER" "$HOME"
 
-RUN install-package curl gnupg
+RUN --mount=type=cache,target=/var/cache/apt install-package curl gnupg
 
 
 RUN dpkg --add-architecture i386 \
@@ -127,10 +127,10 @@ RUN dpkg --add-architecture i386 \
 RUN add-apt-repository -y 'deb https://dl.winehq.org/wine-builds/ubuntu/ focal main'
 
 
-RUN install-package --install-recommends winehq-stable -o APT::Immediate-Configure=false
+RUN --mount=type=cache,target=/var/cache/apt install-package --install-recommends winehq-stable -o APT::Immediate-Configure=false
 
-RUN install-package winetricks winbind
-RUN install-package --no-install-recommends zenity 
+RUN --mount=type=cache,target=/var/cache/apt install-package winetricks winbind
+RUN --mount=type=cache,target=/var/cache/apt install-package --no-install-recommends zenity 
 
 RUN mkdir -p "/run/user/1000/$USER" \
 	&& chown "$USER":"$USER" -R "/run/user/1000/$USER" \
@@ -154,7 +154,7 @@ FROM ubuntu-x11-hw as firefox
 RUN mkdir -p $HOME/{Downloads,.mozilla,.ssh} \
     && chown -R $USER:$USER $HOME
 
-RUN install-package --no-install-recommends ffmpeg firefox
+RUN --mount=type=cache,target=/var/cache/apt install-package --no-install-recommends ffmpeg firefox
 
 RUN echo 'pref("browser.tabs.remote.autostart", false);' >> /etc/firefox/syspref.js
 RUN echo 'pref("security.enterprise_roots.enabled", true);' >> /etc/firefox/syspref.js
@@ -167,3 +167,32 @@ VOLUME $USER/.mozilla
 USER root
 
 CMD s6-setuidgid $USER firefox
+
+
+FROM ubuntu-x11-hw as nomachine
+
+
+RUN --mount=type=cache,target=/var/cache/apt install-package \
+    xdg-utils \
+    curl \
+  && apt-get clean -y
+
+# hadolint ignore=SC1001
+RUN apt-get update \
+  && DEBIAN_FRONTEND=noninteractive \
+	curl -sSL "$(curl -sSL https://www.nomachine.com/download/download\&id=4 2>/dev/null | grep -E -o "http.*download.*deb")" > "/tmp/nomachine.deb" \
+	&& dpkg -i "/tmp/nomachine.deb" \
+  && rm /tmp/nomachine.deb
+  
+
+COPY nomachine/root/ /
+
+USER $USER
+RUN mkdir -p "$HOME/.nx"
+RUN mkdir -p "$HOME/NoMachine"
+VOLUME $HOME/.nx
+VOLUME $HOME/NoMachine
+
+USER root
+
+CMD s6-setuidgid $USER /usr/NX/bin/nxplayer
