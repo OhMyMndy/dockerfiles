@@ -92,6 +92,7 @@ gomplate:
 	docker run --rm -it -v /etc/timezone:/etc/timezone:ro \
 		-v /etc/group:/hostfs/etc/group:ro \
 		-v $$PWD:/src \
+		-v /tmp:/tmp \
 		-v $$HOME:$$HOME:ro \
 		-e DOCKER_IMAGE_VERSION=0.1 \
 		-e USER=$$USER \

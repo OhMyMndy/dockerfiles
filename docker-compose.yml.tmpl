@@ -204,6 +204,9 @@ services:
     volumes:
       {{ tmpl.Exec "DefaultVolumes" }}
       {{ tmpl.Exec "DefaultXVolumes" }}
+      - "{{ env.Getenv "HOME" }}/Downloads:{{ env.Getenv "HOME" }}/Downloads"
+      - "./storage/nomachine-configs:{{ env.Getenv "HOME" }}/.nx"
+      - "./storage/nomachine:{{ env.Getenv "HOME" }}/NoMachine"
     #devices:
     #  - /dev/dri
     networks:
