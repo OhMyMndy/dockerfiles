@@ -214,6 +214,29 @@ services:
       - x11
 
 
+  dosbox:
+    {{ tmpl.Exec "DefaultService" }}
+    image: ohmymndy/dosbox:{{ env.Getenv "DOCKER_IMAGE_VERSION" }}
+    build:
+      args: 
+        {{ tmpl.Exec "DefaultBuildArgs" . }}
+        - VERSION=20.04
+      context: dockerfiles
+      dockerfile: ubuntu/Dockerfile
+      target: dosbox
+    environment: 
+      {{ tmpl.Exec "DefaultEnv" }}
+      {{ tmpl.Exec "DefaultXEnv" }}
+    volumes:
+      {{ tmpl.Exec "DefaultVolumes" }}
+      {{ tmpl.Exec "DefaultXVolumes" }}
+      - "./storage/dosbox:$HOME/.config/dosbox"
+    #devices:
+    #  - /dev/dri
+    networks:
+      - default
+      - x11
+
   wine5:
     {{ tmpl.Exec "DefaultService" }}
     image: ohmymndy/wine5:{{ env.Getenv "DOCKER_IMAGE_VERSION" }}

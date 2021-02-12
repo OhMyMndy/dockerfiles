@@ -196,3 +196,15 @@ VOLUME $HOME/NoMachine
 USER root
 
 CMD s6-setuidgid $USER /usr/NX/bin/nxplayer
+
+FROM ubuntu-x11-hw as dosbox
+USER root
+RUN --mount=type=cache,target=/var/cache/apt install-package dosbox
+
+USER $USER
+RUN mkdir -p "$HOME/.config/dosbox"
+VOLUME $HOME/.config/dosbox
+
+USER root
+
+CMD s6-setuidgid $USER dosbox
