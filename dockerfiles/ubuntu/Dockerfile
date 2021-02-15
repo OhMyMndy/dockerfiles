@@ -208,3 +208,46 @@ VOLUME $HOME/.config/dosbox
 USER root
 
 CMD s6-setuidgid $USER dosbox
+
+
+
+FROM ubuntu-x11-hw as novnc
+
+RUN rm -f /etc/apt/apt.conf.d/docker-clean
+RUN --mount=type=cache,target=/var/cache/apt install-package --no-install-recommends \
+    net-tools \
+    novnc \
+    supervisor \
+    xterm \
+    x11-utils \
+    x11-xserver-utils \
+    eterm \
+    'tigervnc*' \
+    fluxbox
+
+ENV DISPLAY=:0.0
+ENV DISPLAY_WIDTH=1024
+ENV DISPLAY_HEIGHT=768
+
+
+ADD ./novnc/etc/novnc/supervisor /etc/supervisor
+ADD ./novnc/etc/vncstartup.sh /vncstartup.sh
+ADD ./novnc/root/ /
+
+RUN cp -f /usr/share/novnc/vnc.html /usr/share/novnc/index.html
+
+EXPOSE 8080
+
+
+FROM novnc as pycharm
+
+RUN --mount=type=cache,target=/var/cache/apt install-package --no-install-recommends curl
+
+RUN curl -SsL https://download.jetbrains.com/python/pycharm-community-2020.3.3.tar.gz -o /tmp/pycharm.tgz
+RUN true \
+  && mkdir -p /opt/pycharm && tar -xzf /tmp/pycharm.tgz -C /opt/pycharm --strip-components=1 && rm -rf /tmp/** \
+  && test -f /opt/pycharm/bin/pycharm.sh \
+  && test -x /opt/pycharm/bin/pycharm.sh
+
+ADD ./pycharm/root/ /
+

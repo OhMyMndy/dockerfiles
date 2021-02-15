@@ -259,6 +259,55 @@ services:
       - default
       - x11
 
+
+  novnc:
+    {{ tmpl.Exec "DefaultService" }}
+    image: ohmymndy/novnc:{{ env.Getenv "DOCKER_IMAGE_VERSION" }}
+    build:
+      args: 
+        {{ tmpl.Exec "DefaultBuildArgs" . }}
+        - VERSION=20.04
+      context: dockerfiles
+      dockerfile: ubuntu/Dockerfile
+      target: novnc
+    environment: 
+      {{ tmpl.Exec "DefaultEnv" }}
+    volumes:
+      {{ tmpl.Exec "DefaultVolumes" }}
+    #devices:
+    #  - /dev/dri
+    ports:
+      - 8088:8080
+    networks:
+      - default
+      #- x11
+
+  pycharm:
+    {{ tmpl.Exec "DefaultService" }}
+    image: ohmymndy/pycharm:{{ env.Getenv "DOCKER_IMAGE_VERSION" }}
+    build:
+      args: 
+        {{ tmpl.Exec "DefaultBuildArgs" . }}
+        - VERSION=20.04
+      context: dockerfiles
+      dockerfile: ubuntu/Dockerfile
+      target: pycharm
+    environment: 
+      {{ tmpl.Exec "DefaultEnv" }}
+    volumes:
+      {{ tmpl.Exec "DefaultVolumes" }}
+      - ./storage/jetbrains/config:/home/$USER/.config/JetBrains
+      - ./storage/jetbrains/cache:/home/$USER/.cache/JetBrains
+      - ./storage/jetbrains/local_share:/home/$USER/.local/share/JetBrains
+    #devices:
+    #  - /dev/dri
+    ports:
+      - 8089:8080
+    networks:
+      - default
+      #- x11
+
+
   #####################
   # Alpine containers #
   #####################

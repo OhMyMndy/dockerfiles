@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bash
+
+rm -f /tmp/.X0-lock &>/dev/null
+rm -rf /tmp/.X11-unix &>/dev/null
+
+xhost +
+s6-setuidgid $USER tigervncserver -xstartup /vncstartup.sh -rfbport 5900 -localhost no -SecurityTypes None -fg -depth 24 -geometry "$DISPLAY_WIDTH"x"$DISPLAY_HEIGHT" --I-KNOW-THIS-IS-INSECURE :0 -listen tcp

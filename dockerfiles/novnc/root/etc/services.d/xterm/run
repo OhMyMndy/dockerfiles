@@ -1,0 +1,4 @@
+#!/usr/bin/with-contenv bash
+
+xhost +
+s6-setuidgid $USER xterm
