@@ -89,8 +89,8 @@ retropie-list-packages:
 	$(MAKE) -C dockerfiles/retropie retropie-list-packages
 
 gomplate:
-	docker run --rm -it -v /etc/timezone:/etc/timezone:ro \
-		-v /etc/group:/hostfs/etc/group:ro \
+	docker run --rm -it \
+		-v /:/hostfs:ro \
 		-v $$PWD:/src \
 		-v /tmp:/tmp \
 		-v $$HOME:$$HOME:ro \
@@ -104,3 +104,18 @@ gomplate:
 		--plugin awk=/usr/bin/awk \
 		--plugin tr=/usr/bin/tr \
 		-f /src/docker-compose.yml.tmpl > docker-compose.yml
+
+gomplate-shell:
+	docker run --rm -it \
+		-v /:/hostfs:ro \
+		-v $$PWD:/src \
+		-v /tmp:/tmp \
+		-v $$HOME:$$HOME:ro \
+		-e DOCKER_IMAGE_VERSION=0.1 \
+		-e USER=$$USER \
+		-e HOME=$$HOME \
+		-e DISPLAY=$$DISPLAY \
+		-e UID=$$(id -u) \
+		-e GID=$$(id -g) \
+		--entrypoint ash \
+		hairyhenderson/gomplate:v3-alpine

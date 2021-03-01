@@ -1,4 +1,5 @@
 .vscode
+.idea
 etc/openvpn/*
 etc/jupyter
 storage/*/*
@@ -16,4 +17,5 @@ etc/retroarch
 .vagrant
 tmp.*
 *.pyc
-docker-compose.yml
+/docker-compose.yml
+*.log
