@@ -1,0 +1,33 @@
+services:
+
+  selenium-chrome:
+    image: selenium/standalone-chrome-debug:3.141.59-20201119
+    init: true
+    restart: unless-stopped
+    volumes:
+      - /dev/shm:/dev/shm
+    environment:
+      - VNC_NO_PASSWORD=1
+      - SCREEN_WIDTH=800
+      - SCREEN_HEIGHT=800
+
+  # localhost:6080/vnc.html?resize=scale&autoconnect=true
+  novnc:
+    image: ohmymndy/novnc
+    init: true
+    restart: unless-stopped
+    build:
+      context: ./dockerfiles/novnc
+    command: "--vnc selenium-chrome:5900"
+    ports:
+      - 6080:6080
+
+  php:
+    image: ohmymndy/php
+    build:
+      context: ./dockerfiles/php
+    init: true
+    volumes:
+      - ./code:/code
+    working_dir: /code
+    user: ${PUID:-1000}:${PGID:-1000}
