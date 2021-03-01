@@ -18,11 +18,14 @@ version: "3.7"
       - PUID={{ env.Getenv "GID" }}
       - USER={{ env.Getenv "USER" }}
       - DOCKER_GID={{ awk "-F:" "$1 == \"docker\" {printf $3}" "/hostfs/etc/group" }}
+      - RENDER_GID={{ awk "-F:" "$1 == \"render\" {printf $3}" "/hostfs/etc/group" }}
+      - VIDEO_GID={{ awk "-F:" "$1 == \"video\" {printf $3}" "/hostfs/etc/group" }}
+      - AUDIO_GID={{ awk "-F:" "$1 == \"audio\" {printf $3}" "/hostfs/etc/group" }}
       - DOCKER_IMAGE_VERSION={{  env.Getenv "DOCKER_IMAGE_VERSION" }}
 {{- end -}}
 
 {{- define "DefaultVolumes" -}}
-    {{- if (file.IsDir "/var/lib/lxcfs/proc") -}}
+    {{- if (file.Exists "/hostfs/var/lib/lxcfs/proc") -}}
       - type: bind
         source: /var/lib/lxcfs/proc/cpuinfo
         target: /proc/cpuinfo
@@ -42,21 +45,21 @@ version: "3.7"
         source: /var/lib/lxcfs/proc/uptime
         target: /proc/uptime
     {{- end -}}
-    {{- if (file.Exists "/etc/timezone") -}}
+    {{ if (file.Exists "/hostfs/etc/timezone") }}
       - type: bind
         source: /etc/timezone
         target: /etc/timezone
     {{- end -}}
-    {{- if (file.Exists "/etc/localtime") -}}
+    {{ if (file.Exists "/hostfs/etc/localtime") }}
       - type: bind
         source: /etc/localtime
         target: /etc/localtime
-    {{ end }}
-    {{ if (file.Exists "/etc/machine-id") }}
+    {{- end -}}
+    {{ if (file.Exists "/hostfs/etc/machine-id") }}
       - type: bind
         source: /etc/machine-id
         target: /etc/machine-id
-    {{ end }}
+    {{- end -}}
 {{- end -}}
 
 {{ define "DefaultXVolumes" }}
@@ -69,28 +72,27 @@ version: "3.7"
       - type: bind
         source: /run/user/{{ .Env.UID }}/pulse
         target: /run/user/{{ .Env.UID }}/pulse
-      
-      {{ end }}
+      {{- end -}}
       {{ if (file.Exists "./etc/pulse/pulse-client.conf") }}
       - type: bind
         source: ./etc/pulse/pulse-client.conf
         target: /etc/pulse/client.conf
-      {{ end }}
+      {{- end -}}
       {{ if (file.Exists "{{ .Env.HOME }}/.config/fontconfig") }}
       - type: bind
         source: {{ .Env.HOME }}/.config/fontconfig
         target: {{ .Env.HOME }}/.config/fontconfig
-      {{ end }}
+      {{- end -}}
       {{ if (file.Exists "{{ .Env.HOME }}/.config/gtk-3.0") }}
       - type: bind
         source: {{ .Env.HOME }}/.config/gtk-3.0
         target: {{ .Env.HOME }}/.config/gtk-3.0
-      {{ end }}
+      {{- end -}}
       {{ if (file.Exists "{{ .Env.HOME }}/.Xresources") }}
       - type: bind
         source: {{ .Env.HOME }}/.Xresources
         target: {{ .Env.HOME }}/.Xresources
-      {{ end }}
+      {{- end -}}
       - type: bind
         source: ./etc/ssl/certificates
         target: /etc/ssl/certificates
@@ -98,8 +100,8 @@ version: "3.7"
       - type: bind
         source: {{ .Env.HOME }}/.local/share/fonts
         target: {{ .Env.HOME }}/.local/share/fonts
-      {{ end }}
-{{ end }}
+      {{- end -}}
+{{- end -}}
 
 {{- define "DefaultXEnv" -}}
   - DISPLAY={{ env.Getenv "DISPLAY" "null"}}
@@ -122,13 +124,13 @@ services:
     build:
       args: 
         {{ tmpl.Exec "DefaultBuildArgs" . }}
-        - VERSION={{ . }}
+        - UBUNTU_VERSION={{ . }}
       context: dockerfiles
       dockerfile: ubuntu/Dockerfile
       target: ubuntu
     environment: 
       {{ tmpl.Exec "DefaultEnv" }}
-      - VERSION={{ . }}
+      - UBUNTU_VERSION={{ . }}
     volumes:
       {{ tmpl.Exec "DefaultVolumes" }}
 
@@ -138,13 +140,13 @@ services:
     build:
       args: 
         {{ tmpl.Exec "DefaultBuildArgs" . }}
-        - VERSION={{ . }}
+        - UBUNTU_VERSION={{ . }}
       context: dockerfiles
       dockerfile: ubuntu/Dockerfile
       target: ubuntu-x11
     environment: 
       {{ tmpl.Exec "DefaultEnv" }}
-      - VERSION={{ . }}
+      - UBUNTU_VERSION={{ . }}
     volumes:
       {{ tmpl.Exec "DefaultVolumes" }}
   ubuntu-x11-hw-{{ . }}:
@@ -153,14 +155,14 @@ services:
     build:
       args: 
         {{ tmpl.Exec "DefaultBuildArgs" . }}
-        - VERSION={{ . }}
+        - UBUNTU_VERSION={{ . }}
       context: dockerfiles
       dockerfile: ubuntu/Dockerfile
       target: ubuntu-x11-hw
     environment: 
       {{ tmpl.Exec "DefaultEnv" }}
       {{ tmpl.Exec "DefaultXEnv" }}
-      - VERSION={{ . }}
+      - UBUNTU_VERSION={{ . }}
     volumes:
       {{ tmpl.Exec "DefaultVolumes" }}
   {{ end }}
@@ -172,7 +174,7 @@ services:
     build:
       args: 
         {{ tmpl.Exec "DefaultBuildArgs" . }}
-        - VERSION=20.04
+        - UBUNTU_VERSION=20.04
       context: dockerfiles
       dockerfile: ubuntu/Dockerfile
       target: firefox
@@ -188,13 +190,38 @@ services:
       - default
       - x11
 
+
+
+  vivaldi-novnc:
+    {{ tmpl.Exec "DefaultService" }}
+    image: ohmymndy/vivaldi-novnc:{{ env.Getenv "DOCKER_IMAGE_VERSION" }}
+    build:
+      args: 
+        {{ tmpl.Exec "DefaultBuildArgs" . }}
+        - UBUNTU_VERSION=20.04
+      context: dockerfiles
+      dockerfile: ubuntu/Dockerfile
+      target: vivaldi-novnc
+    environment: 
+      {{ tmpl.Exec "DefaultEnv" }}
+      {{ tmpl.Exec "DefaultXEnv" }}
+    volumes:
+      {{ tmpl.Exec "DefaultVolumes" }}
+      {{ tmpl.Exec "DefaultXVolumes" }}
+    #devices:
+      #- /dev/dri
+    networks:
+      - default
+      - x11
+
+
   nomachine:
     {{ tmpl.Exec "DefaultService" }}
     image: ohmymndy/nomachine:{{ env.Getenv "DOCKER_IMAGE_VERSION" }}
     build:
       args: 
         {{ tmpl.Exec "DefaultBuildArgs" . }}
-        - VERSION=20.04
+        - UBUNTU_VERSION=20.04
       context: dockerfiles
       dockerfile: ubuntu/Dockerfile
       target: nomachine
@@ -213,14 +240,13 @@ services:
       - default
       - x11
 
-
   dosbox:
     {{ tmpl.Exec "DefaultService" }}
     image: ohmymndy/dosbox:{{ env.Getenv "DOCKER_IMAGE_VERSION" }}
     build:
       args: 
         {{ tmpl.Exec "DefaultBuildArgs" . }}
-        - VERSION=20.04
+        - UBUNTU_VERSION=20.04
       context: dockerfiles
       dockerfile: ubuntu/Dockerfile
       target: dosbox
@@ -243,7 +269,7 @@ services:
     build:
       args: 
         {{ tmpl.Exec "DefaultBuildArgs" . }}
-        - VERSION=20.04
+        - UBUNTU_VERSION=20.04
       context: dockerfiles
       dockerfile: ubuntu/Dockerfile
       target: wine5
@@ -266,7 +292,7 @@ services:
     build:
       args: 
         {{ tmpl.Exec "DefaultBuildArgs" . }}
-        - VERSION=20.04
+        - UBUNTU_VERSION=20.04
       context: dockerfiles
       dockerfile: ubuntu/Dockerfile
       target: novnc
@@ -288,7 +314,7 @@ services:
     build:
       args: 
         {{ tmpl.Exec "DefaultBuildArgs" . }}
-        - VERSION=20.04
+        - UBUNTU_VERSION=20.04
       context: dockerfiles
       dockerfile: ubuntu/Dockerfile
       target: pycharm
@@ -306,6 +332,85 @@ services:
     networks:
       - default
       #- x11
+
+
+  phpstorm:
+    {{ tmpl.Exec "DefaultService" }}
+    image: ohmymndy/phpstorm:{{ env.Getenv "DOCKER_IMAGE_VERSION" }}
+    privileged: true
+    build:
+      args: 
+        {{ tmpl.Exec "DefaultBuildArgs" . }}
+        - UBUNTU_VERSION=20.04
+      context: dockerfiles
+      dockerfile: ubuntu/Dockerfile
+      target: phpstorm
+    environment: 
+      {{ tmpl.Exec "DefaultEnv" }}
+    volumes:
+      {{ tmpl.Exec "DefaultVolumes" }}
+      - ./storage/jetbrains/config:{{ .Env.HOME }}/.config/JetBrains
+      - ./storage/jetbrains/cache:{{ .Env.HOME }}/.cache/JetBrains
+      - ./storage/jetbrains/local_share:{{ .Env.HOME }}/.local/share/JetBrains
+      - ./storage/phpstorm/docker:/var/lib/docker
+      {{ if (file.IsDir (printf `/hostfs%s/src` (env.Getenv `HOME`))) -}}
+      - type: bind
+        source: {{ .Env.HOME }}/src
+        target: {{ .Env.HOME }}/src
+      {{- end -}}
+      {{ if (file.IsDir (printf `/hostfs%s/dotfiles` (env.Getenv `HOME`))) }}
+      - type: bind
+        source: {{ .Env.HOME }}/dotfiles
+        target: {{ .Env.HOME }}/dotfiles
+      {{- end }}
+    #devices:
+    #  - /dev/dri
+    ports:
+      - 8090:8080
+    networks:
+      - default
+      #- x11      
+
+  code:
+    {{ tmpl.Exec "DefaultService" }}
+    image: ohmymndy/code:{{ env.Getenv "DOCKER_IMAGE_VERSION" }}
+    build:
+      args: 
+        {{ tmpl.Exec "DefaultBuildArgs" . }}
+        - UBUNTU_VERSION=20.04
+      context: dockerfiles
+      dockerfile: ubuntu/Dockerfile
+      target: code
+    environment: 
+      {{ tmpl.Exec "DefaultEnv" }}
+    volumes:
+      {{ tmpl.Exec "DefaultVolumes" }}
+      - ./storage/code/config:/home/$USER/.config/Code
+      - ./storage/code/cache:/home/$USER/.cache
+    #devices:
+    #  - /dev/dri
+    ports:
+      - 8089:8080
+    networks:
+      - default
+      #- x11
+
+
+
+  audiotools:
+    {{ tmpl.Exec "DefaultService" }}
+    image: ohmymndy/audiotools:{{ env.Getenv "DOCKER_IMAGE_VERSION" }}
+    build:
+      args: 
+        {{ tmpl.Exec "DefaultBuildArgs" . }}
+        - UBUNTU_VERSION=20.04
+      context: dockerfiles
+      dockerfile: ubuntu/Dockerfile
+      target: audiotools
+    environment: 
+      {{ tmpl.Exec "DefaultEnv" }}
+    volumes:
+      {{ tmpl.Exec "DefaultVolumes" }}
 
 
   #####################

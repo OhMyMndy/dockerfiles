@@ -1,0 +1,53 @@
+#!/usr/bin/with-contenv bash
+
+# @see https://raw.githubusercontent.com/linuxserver/docker-baseimage-alpine/master/root/etc/cont-init.d/10-adduser
+
+
+if [[ -n $USER ]] && [[ -n $HOME ]]; then
+	PUID="${PUID:-1000}"
+	PGID="${PGID:-1000}"
+	
+	groupmod -o -g "$PGID" "$USER"
+	usermod -o -u "$PUID" "$USER"
+
+    if [[ ! -f "$HOME/.initialized" ]]; then
+        cp -ra "${HOME}_original" "$HOME"
+        touch "$HOME/.initialized"
+    fi
+
+	find "$HOME" -maxdepth 1 -name '\.*' -print0 | xargs -r -0 chown "$USER:$USER" -R
+	echo "$CHOWN_PATHS" | tr '\r\n' '\0' | xargs -r -0 chown "$USER:$USER" -R
+fi
+
+if [[ -n $DOCKER_GID ]] && [[ -n $USER ]]; then
+    groupadd -g "$DOCKER_GID" docker;
+    groupmod -o -g "$DOCKER_GID" docker;
+    usermod -aG "$DOCKER_GID" "$USER";
+fi
+
+
+if [[ -n $VIDEO_GID ]] && [[ -n $USER ]]; then
+    groupadd -g "$VIDEO_GID" video;
+    groupmod -o -g "$VIDEO_GID" video;
+    usermod -aG "$VIDEO_GID" "$USER";
+fi
+
+if [[ -n $AUDIO_GID ]] && [[ -n $USER ]]; then
+    groupadd -g "$AUDIO_GID" audio;
+    groupmod -o -g "$AUDIO_GID" audio;
+    usermod -aG "$AUDIO_GID" "$USER";
+fi
+
+
+if [[ -n $RENDER_GID ]] && [[ -n $USER ]]; then
+    groupadd -g "$RENDER_GID" render;
+    groupmod -o -g "$RENDER_GID" render;
+    usermod -aG "$RENDER_GID" "$USER";
+fi
+
+
+if [[ -n $INPUT_GID ]] && [[ -n $USER ]]; then
+    groupadd -g "$INPUT_GID" input;
+    groupmod -o -g "$INPUT_GID" input;
+    usermod -aG "$INPUT_GID" "$USER";
+fi

@@ -1,0 +1,10 @@
+#!/usr/bin/with-contenv bash
+
+set -e
+if [[ -n $XFCE4_PANEL ]]; then
+    s6-setuidgid $USER xfce4-panel $XFCE4_PANEL_ARGS
+else
+    sleep infinity
+fi
+
+sleep 5

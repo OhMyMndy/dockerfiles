@@ -1,0 +1,12 @@
+#!/usr/bin/with-contenv bash
+
+
+if [[ -n $XTERM ]]; then
+    if command -v x-terminal-emulator &>/dev/null; then
+        s6-setuidgid $USER x-terminal-emulator
+    else
+        s6-setuidgid $USER xterm
+    fi
+else
+    sleep infinity
+fi

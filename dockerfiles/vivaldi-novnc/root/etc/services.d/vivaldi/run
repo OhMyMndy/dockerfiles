@@ -1,0 +1,10 @@
+#!/usr/bin/with-contenv bash
+
+set -e
+
+s6-setuidgid $USER vivaldi $VIVALDI_ARGS
+
+while true; do 
+    pgrep vivaldi &>/dev/null
+    sleep 10
+done

@@ -1,16 +1,16 @@
-ARG VERSION=non-existing
-FROM ubuntu:$VERSION as ubuntu
+ARG UBUNTU_VERSION=non-existing
+FROM ubuntu:$UBUNTU_VERSION as ubuntu
 LABEL maintainer "Mandy Schoep <mandyschoep@gmail.com>"
 SHELL [ "/bin/bash", "-o", "pipefail", "-c" ]
 
-ARG VERSION
+ARG UBUNTU_VERSION
 ARG USER=user
 ARG PUID=1000
 ARG PGID=1000
 
 ENV SHELL=/bin/bash
 ENV USER=$USER
-ENV VERSION=$VERSION
+ENV UBUNTU_VERSION=$UBUNTU_VERSION
 ENV HOME=/home/$USER
 ENV PATH=$PATH:$HOME/.local/bin
 
@@ -21,11 +21,11 @@ ARG OVERLAY_ARCH="amd64"
 ADD https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz /tmp/
 
 # hadolint ignore=SC2015
-RUN [[ "$VERSION" != '18.04' ]] && tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C / --exclude="./bin" && \
+RUN [[ "$UBUNTU_VERSION" != '18.04' ]] && tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C / --exclude="./bin" && \
     tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C /usr ./bin || true
 
 # hadolint ignore=SC2015
-RUN [[ "$VERSION" = '18.04' ]] && tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C / || true
+RUN [[ "$UBUNTU_VERSION" = '18.04' ]] && tar xzf /tmp/s6-overlay-${OVERLAY_ARCH}.tar.gz -C / || true
 
 COPY shared/root/ /
 COPY ubuntu/root/ /
@@ -39,8 +39,11 @@ RUN groupadd -g 1000 "$USER" \
 	&& useradd --create-home -u "$PUID" -g "$PGID" -s /bin/bash --home-dir "$HOME" "$USER" \
 	&& mkdir -p "$HOME"/{.ssh,.config,.local/share} \
 	&& chown -R "$USER":"$USER" "$HOME" \
-	&& usermod -a -G audio,video,root,sudo "$USER"
+	&& usermod -a -G sudo "$USER"
 
+RUN mv "$HOME" "${HOME}_original"
+RUN ln -sf "${HOME}_original" "$HOME"
+RUN touch "$HOME/.initialized"
 
 VOLUME $HOME/.ssh
 WORKDIR $HOME
@@ -84,13 +87,18 @@ RUN --mount=type=cache,target=/var/cache/apt install-package \
 	dbus-x11 \
 	dbus \
 	gtk2-engines-pixbuf \
+	yaru-theme-gtk \
+	yaru-theme-icon \
+	zsh fzf htop tmux \
 	--no-install-recommends
 	
+RUN usermod -aG audio,video "$USER"
+
 COPY ubuntu-x11/root/ /
 
 
 
-FROM ubuntu as ubuntu-x11-hw
+FROM ubuntu-x11 as ubuntu-x11-hw
 
 USER root
 
@@ -105,10 +113,10 @@ RUN --mount=type=cache,target=/var/cache/apt install-package \
 	libgl1-mesa-glx \
 	xterm \
 	xorg \
+	compton \
    --no-install-recommends
   
-RUN usermod -aG audio,video,root,input "$USER"
-
+RUN usermod -aG audio,video,render,input "$USER"
 
 FROM ubuntu-x11-hw as wine5
 
@@ -223,7 +231,9 @@ RUN --mount=type=cache,target=/var/cache/apt install-package --no-install-recomm
     x11-xserver-utils \
     eterm \
     'tigervnc*' \
-    fluxbox
+    # fluxbox \
+	xfwm4 xfce4-panel xfdesktop4 xfce4-terminal xfce4-settings \
+	curl
 
 ENV DISPLAY=:0.0
 ENV DISPLAY_WIDTH=1024
@@ -239,15 +249,104 @@ RUN cp -f /usr/share/novnc/vnc.html /usr/share/novnc/index.html
 EXPOSE 8080
 
 
-FROM novnc as pycharm
+FROM novnc as novnc-docker
 
-RUN --mount=type=cache,target=/var/cache/apt install-package --no-install-recommends curl
 
-RUN curl -SsL https://download.jetbrains.com/python/pycharm-community-2020.3.3.tar.gz -o /tmp/pycharm.tgz
-RUN true \
+RUN --mount=type=cache,target=/var/cache/apt install-package btrfs-progs e2fsprogs iptables openssl xfsprogs xz-utils pigz
+RUN curl -SsL https://get.docker.com | bash -
+RUN curl -SsL https://raw.githubusercontent.com/moby/moby/master/hack/dind > /bin/dind && chmod +x /bin/dind
+RUN curl -L "https://github.com/docker/compose/releases/download/1.28.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
+    && chmod +x /usr/local/bin/docker-compose
+
+
+RUN usermod -aG docker $USER
+ADD ./novnc-docker/root/ /
+
+FROM novnc-docker as pycharm
+
+RUN --mount=type=cache,target=/var/cache/apt install-package --no-install-recommends git tig vim
+
+RUN curl -SsL https://download.jetbrains.com/python/pycharm-community-2020.3.3.tar.gz -o /tmp/pycharm.tgz \
   && mkdir -p /opt/pycharm && tar -xzf /tmp/pycharm.tgz -C /opt/pycharm --strip-components=1 && rm -rf /tmp/** \
   && test -f /opt/pycharm/bin/pycharm.sh \
   && test -x /opt/pycharm/bin/pycharm.sh
 
 ADD ./pycharm/root/ /
 
+
+FROM novnc-docker as code
+
+RUN --mount=type=cache,target=/var/cache/apt install-package --no-install-recommends git tig
+
+
+RUN curl -LsS -o /tmp/vscode.deb https://go.microsoft.com/fwlink/?LinkID=760868 \
+	&& dpkg -i /tmp/vscode.deb \
+	; apt-get update -y \
+	&& DEBIAN_FRONTEND=noninteractive apt-get install -y -f --no-install-recommends \
+	&& rm /tmp/vscode.deb \
+	&& rm -rf /tmp/*
+
+RUN --mount=type=cache,target=/var/cache/apt install-package gpg-agent \
+	libx11-xcb1 \
+	libxtst6 \
+	libasound2
+
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && usermod -aG sudo $USER && passwd -d $USER
+
+ADD ./code/root/ /
+
+
+
+FROM ubuntu as audiotools
+
+RUN --mount=type=cache,target=/var/cache/apt install-package audiotools # ffmpeg
+
+# ENTRYPOINT [ "" ]
+
+
+
+
+FROM novnc as vivaldi-novnc
+
+
+
+RUN mkdir -p $HOME/.cache/vivaldi \
+	&& mkdir -p $HOME/.config/vivaldi \
+    && chown -R $USER:$USER $HOME
+
+RUN --mount=type=cache,target=/var/cache/apt install-deb-from-url https://downloads.vivaldi.com/stable/vivaldi-stable_3.6.2165.40-1_amd64.deb
+USER $USER
+
+VOLUME $USER/.cache/vivaldi
+VOLUME $USER/.config/vivaldi
+
+
+USER root
+
+ADD ./vivaldi-novnc/root/ /
+
+
+
+
+FROM novnc-docker as phpstorm
+
+RUN --mount=type=cache,target=/var/cache/apt install-package --no-install-recommends git tig vim
+
+RUN --mount=type=cache,target=/tmp curl -SsL https://download-cf.jetbrains.com/webide/PhpStorm-2020.3.2.tar.gz -o /tmp/phpstorm.tgz \
+  && mkdir -p /opt/phpstorm && tar -xzf /tmp/phpstorm.tgz -C /opt/phpstorm --strip-components=1 && rm -rf /tmp/** \
+  && test -f /opt/phpstorm/bin/phpstorm.sh \
+  && test -x /opt/phpstorm/bin/phpstorm.sh
+
+ADD ./phpstorm/root/ /
+
+RUN mkdir -p $HOME/.cache/vivaldi \
+	&& mkdir -p $HOME/.config/vivaldi \
+    && chown -R $USER:$USER $HOME
+
+RUN --mount=type=cache,target=/var/cache/apt install-deb-from-url https://downloads.vivaldi.com/stable/vivaldi-stable_3.6.2165.40-1_amd64.deb
+USER $USER
+
+VOLUME $USER/.cache/vivaldi
+VOLUME $USER/.config/vivaldi
+
+USER root
