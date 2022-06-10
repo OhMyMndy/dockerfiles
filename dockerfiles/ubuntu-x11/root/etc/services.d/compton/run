@@ -1,9 +1,0 @@
-#!/usr/bin/with-contenv bash
-
-if [[ -n $COMPTON ]]; then
-    s6-setuidgid $USER compton $COMPTON_ARGS
-else
-    sleep infinity
-fi
-
-sleep 5

@@ -1,4 +1,0 @@
-#!/usr/bin/with-contenv bash
-
-xhost +
-s6-setuidgid $USER /usr/share/novnc/utils/launch.sh --listen 8080 --vnc ${VNC_DEST:-localhost:5900} --web /usr/share/novnc/ 

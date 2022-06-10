@@ -1,7 +1,0 @@
-#!/usr/bin/with-contenv bash
-
-
-mkdir -p "$HOME/.config/Code"
-if [[ "$(ls -A "$HOME/.config/Code")" = '' ]]; then
-    cp "$HOME/.config/Code_original/*" "$HOME/.config/Code/"
-fi

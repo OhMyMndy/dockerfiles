@@ -1,6 +1,0 @@
-#!/usr/bin/with-contenv bash
-
-
-crontab /etc/cron.d/*
-
-/usr/sbin/cron -f -l -L 15

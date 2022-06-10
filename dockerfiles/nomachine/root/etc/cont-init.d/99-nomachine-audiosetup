@@ -1,4 +1,0 @@
-#!/usr/bin/with-contenv bash
-
-
-/usr/NX/scripts/setup/nxnode --audiosetup
