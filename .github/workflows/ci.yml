@@ -21,6 +21,6 @@ jobs:
       - name: Build and push ohmymndy/kasm-obsidian
         uses: docker/build-push-action@v3
         with:
-          context: ./kasm/kasm-obsidian
+          context: "{{defaultContext}}/kasm/kasm-obsidian"
           push: true
           tags: ohmymndy/kasm-obsidian:latest
