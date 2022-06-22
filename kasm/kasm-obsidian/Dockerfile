@@ -11,4 +11,5 @@ RUN deb-get install insync
 RUN deb-get install vivaldi-stable
 RUN deb-get install signal-desktop
 
-USER 1000
+RUN chown kasm-user:kasm-user -R ~kasm-user
+USER kasm-user
