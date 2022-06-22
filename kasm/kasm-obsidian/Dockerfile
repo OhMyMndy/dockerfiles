@@ -19,5 +19,8 @@ USER kasm-user
 
 RUN mkdir -p ~/.local/share/applications/
 RUN cp /usr/share/applications/obsidian.desktop ~/.local/share/applications/obsidian.desktop 
-RUN sed -iE 's#/obsidian #/obsidian --no-sandbox #' ~/.local/share/applications/obsidian.desktop
+RUN sed -iE 's#/obsidian #/obsidian --no-sandbox #g' ~/.local/share/applications/obsidian.desktop
+
+RUN cp /usr/share/applications/vivaldi-stable.desktop ~/.local/share/applications/vivaldi-stable.desktop 
+RUN sed -iE 's#/vivaldi-stable #/vivaldi-stable --no-sandbox #g' ~/.local/share/applications/vivaldi-stable.desktop
 RUN update-desktop-database ~/.local/share/applications/
