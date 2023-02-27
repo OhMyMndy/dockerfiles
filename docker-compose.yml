@@ -1,0 +1,5 @@
+services:
+  kasm-obsidian:
+    build:
+      context: ./kasm/kasm-obsidian
+    image: ohmymndy/kasm-obsidian:${IMAGE_TAG:?}
