@@ -25,6 +25,7 @@ jobs:
           DOCKER_BUILDKIT: 1
         run: |
           IMAGE_TAG="$(cat version.txt)"
+          export IMAGE_TAG
           just build
           just push
 
