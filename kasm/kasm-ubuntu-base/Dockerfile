@@ -15,3 +15,10 @@ RUN passwd -d kasm-user
 
 RUN chown kasm-user:kasm-user -R ~kasm-user
 USER kasm-user
+
+
+ENV HOME=/home/kasm-user
+ENV USER=kasm-user
+
+RUN bash -c "shopt -s dotglob && cp -f /etc/skel/* ~/"
+RUN cat /home/kasm-default-profile/.bashrc >> ~/.bash_rc && mkdir -p ~/Desktop

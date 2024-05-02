@@ -19,7 +19,7 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "nix-env -i just hadolint",
+	"postCreateCommand": "nix-env -iA nixpkgs.just nixpkgs.hadolint nixpkgs.direnv",
 
 	// Configure tool-specific properties.
 	// "customizations": {},
