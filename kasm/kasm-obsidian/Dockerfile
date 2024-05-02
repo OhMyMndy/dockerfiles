@@ -1,23 +1,10 @@
-ARG BASE_IMAGE="kasmweb/ubuntu-jammy-desktop:develop"
+ARG IMAGE_TAG
+ARG BASE_IMAGE="ohmymndy/kasm-ubuntu-base:${IMAGE_TAG}"
 FROM $BASE_IMAGE
-USER root
-
-RUN apt-get update && \
-    apt-get install -y software-properties-common sudo && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 
-RUN curl -sL https://raw.githubusercontent.com/wimpysworld/deb-get/main/deb-get | sudo -E bash -s install deb-get
-RUN deb-get install obsidian
+RUN deb-get install obsidian; sudo apt-get update && sudo apt-get install -y -f -q && deb-get install obsidian
 
-
-
-RUN usermod -aG sudo kasm-user
-RUN passwd -d kasm-user
-
-RUN chown kasm-user:kasm-user -R ~kasm-user
-USER kasm-user
 
 RUN mkdir -p ~/.local/share/applications/
 RUN cp /usr/share/applications/obsidian.desktop ~/.local/share/applications/obsidian.desktop 

@@ -8,18 +8,18 @@
 	"features": {
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {
 			"version": "latest",
-			"enableNonRootDocker": "true",
+			"enableNonRootDocker": "false",
 			"moby": "true"
 		},
 		"ghcr.io/devcontainers-contrib/features/act-asdf:2": {},
-		"ghcr.io/dhoeric/features/hadolint:1": {}
-	}
+		"ghcr.io/devcontainers/features/nix:1": {}
+	},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "docker --version",
+	"postCreateCommand": "nix-env -i just hadolint",
 
 	// Configure tool-specific properties.
 	// "customizations": {},

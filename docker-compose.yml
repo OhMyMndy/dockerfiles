@@ -1,5 +1,21 @@
 services:
+  kasm-ubuntu-base:
+    build:
+      context: ./kasm/kasm-ubuntu-base
+    image: ohmymndy/kasm-ubuntu-base:${IMAGE_TAG:?}
+    shm_size: 1gb
+  
   kasm-obsidian:
     build:
       context: ./kasm/kasm-obsidian
+      args:
+        - IMAGE_TAG=${IMAGE_TAG:?}
     image: ohmymndy/kasm-obsidian:${IMAGE_TAG:?}
+    shm_size: 1gb
+    ports:
+      - 6901:6901/tcp
+      - 6901:6901/udp
+    environment:
+      - VNC_PW=password
+    depends_on:
+      - kasm-ubuntu-base
