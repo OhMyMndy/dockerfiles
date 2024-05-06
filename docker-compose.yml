@@ -35,3 +35,24 @@ services:
       - VNC_PW=password
     depends_on:
       - kasm-ubuntu-base
+
+  kasm-el-base:
+    build:
+      context: ./kasm/kasm-el-base
+    image: ohmymndy/kasm-el-base:${IMAGE_TAG:?}
+    shm_size: 1gb
+
+  kasm-el-nix-base:
+    build:
+      context: ./kasm/kasm-el-nix-base
+      args:
+        - IMAGE_TAG=${IMAGE_TAG:?}
+    image: ohmymndy/kasm-el-nix-base:${IMAGE_TAG:?}
+    shm_size: 1gb
+    ports:
+      - 6903:6901/tcp
+      - 6903:6901/udp
+    environment:
+      - VNC_PW=password
+    depends_on:
+      - kasm-el-base
