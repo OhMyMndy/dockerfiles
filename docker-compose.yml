@@ -4,8 +4,7 @@ services:
       context: ./kasm/kasm-ubuntu-base
     image: ohmymndy/kasm-ubuntu-base:${IMAGE_TAG:?}
     shm_size: 1gb
-  
-  
+
   kasm-obsidian:
     build:
       context: ./kasm/kasm-obsidian
@@ -56,3 +55,10 @@ services:
       - VNC_PW=password
     depends_on:
       - kasm-el-base
+
+  insync:
+    build:
+      context: ./insync
+      args:
+        - IMAGE_TAG=${IMAGE_TAG:?}
+    image: ohmymndy/insync:${IMAGE_TAG:?}

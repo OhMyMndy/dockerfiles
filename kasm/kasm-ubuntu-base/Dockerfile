@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="kasmweb/core-ubuntu-jammy:develop"
+ARG BASE_IMAGE="kasmweb/core-ubuntu-noble:develop"
 FROM $BASE_IMAGE
 USER root
 
