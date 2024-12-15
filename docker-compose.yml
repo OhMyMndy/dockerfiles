@@ -62,3 +62,11 @@ services:
       args:
         - IMAGE_TAG=${IMAGE_TAG:?}
     image: ohmymndy/insync:${IMAGE_TAG:?}
+
+  virter:
+    build:
+      context: ./virter
+      args:
+        - IMAGE_TAG=${IMAGE_TAG:?}
+    privileged: true
+    image: ohmymndy/virter:${IMAGE_TAG:?}

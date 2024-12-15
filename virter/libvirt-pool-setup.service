@@ -1,0 +1,15 @@
+[Unit]
+Description=Configure Libvirt Default Storage Pool
+After=virtstoraged.service
+Requires=virtstoraged.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c 'virsh pool-list --all | grep -w default || virsh pool-define-as default dir --target "/var/lib/libvirt/images"'
+ExecStart=/bin/bash -c 'virsh pool-list | grep -w default || virsh pool-build default'
+ExecStart=/bin/bash -c 'virsh pool-info default | grep -w active || virsh pool-start default'
+ExecStart=/bin/bash -c 'virsh pool-info default | grep -w autostart || virsh pool-autostart default'
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

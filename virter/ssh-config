@@ -1,0 +1,5 @@
+Match exec "virter vm exists %h"
+  User root
+  IdentityAgent none
+  IdentityFile ~/.config/virter/id_rsa
+  KnownHostsCommand /usr/bin/env virter vm host-key %n
