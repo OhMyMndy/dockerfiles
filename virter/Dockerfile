@@ -1,4 +1,4 @@
-FROM fedora:41
+FROM fedora:42
 
 RUN dnf install virt-install virt-backup virt-lightning virt-top libvirt libvirt-nss -y
 RUN systemctl enable libvirtd
