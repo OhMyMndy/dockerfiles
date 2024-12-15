@@ -19,6 +19,7 @@ RUN dnf install curl -y
 RUN curl -SsL https://github.com/LINBIT/virter/releases/download/v0.28.1/virter-linux-amd64 -o /usr/bin/virter
 RUN chmod +x /usr/bin/virter
 
+RUN printf 'user = "root"\ngroup = "qemu"\ndynamic_ownership = 0\nremember_owner = 0\nnamespaces=[]' > /etc/libvirt/qemu.conf
 
 RUN dnf install openssh -y
 
