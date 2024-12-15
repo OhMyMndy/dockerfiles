@@ -34,5 +34,5 @@ virter image pull alma-9
 virter vm run alma-9 --name alma-9 --id 3
 # wait for the VM to boot
 sleep 30
-virter vm ssh alma-9
+virter vm ssh alma-9 # or `ssh alma-9`
 ```
