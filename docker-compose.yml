@@ -70,3 +70,12 @@ services:
         - IMAGE_TAG=${IMAGE_TAG:?}
     privileged: true
     image: ohmymndy/virter:${IMAGE_TAG:?}
+
+  proxy-all:
+    build:
+      context: ./proxy-all
+      args:
+        - IMAGE_TAG=${IMAGE_TAG:?}
+    ports:
+      - 9901:5000
+    image: ohmymndy/proxy-all:${IMAGE_TAG:?}
