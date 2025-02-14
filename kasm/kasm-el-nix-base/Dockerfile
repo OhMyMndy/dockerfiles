@@ -2,9 +2,9 @@ ARG IMAGE_TAG
 ARG BASE_IMAGE="ohmymndy/kasm-el-base:${IMAGE_TAG}"
 FROM $BASE_IMAGE
 
-RUN sudo dnf install -y xz && \
-    sudo dnf clean all && \
-    sudo rm -rf /var/cache/dnf
+RUN dnf install -y xz && \
+    dnf clean all && \
+    rm -rf /var/cache/dnf
 
 ENV NIX_VERSION=2.22.0
 ENV LD_LIBRARY_PATH=

@@ -5,7 +5,7 @@ USER root
 RUN dnf install -y sudo podman podman-docker && \
     dnf clean all && \
     rm -rf /var/cache/dnf
-RUN sudo chmod ug+s /usr/bin/new{gid,uid}map
+RUN chmod ug+s /usr/bin/new{gid,uid}map
 
 
 RUN usermod -aG wheel kasm-user

@@ -48,7 +48,12 @@ def proxy():
         if resp.status_code != 200:
             return resp
 
-        excluded_headers = ["content-encoding", "transfer-encoding", "connection"]
+        excluded_headers = [
+            "content-encoding",
+            "transfer-encoding",
+            "connection",
+            "x-frame-options",
+        ]
         headers = [
             (name, value)
             for (name, value) in resp.raw.headers.items()
