@@ -60,15 +60,14 @@ def proxy():
         soup = BeautifulSoup(resp.content, "html.parser")
         language = guess_lexer(resp.content).name
 
+        base_url = request.base_url.replace("http://", "//")
         content = resp.content
         if bool(soup.find()) and language in ["XML", "HTML"]:
             for tag in soup.find_all(href=True):
-                tag["href"] = prepend_base_url(
-                    request.base_url, target_url, tag["href"]
-                )
+                tag["href"] = prepend_base_url(base_url, target_url, tag["href"])
 
             for tag in soup.find_all(src=True):
-                tag["src"] = prepend_base_url(request.base_url, target_url, tag["src"])
+                tag["src"] = prepend_base_url(base_url, target_url, tag["src"])
 
             content = soup.encode("utf8")
 
