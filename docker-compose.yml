@@ -77,5 +77,14 @@ services:
       args:
         - IMAGE_TAG=${IMAGE_TAG:?}
     ports:
-      - 9901:5000
+      - 5001:5000
     image: ohmymndy/proxy-all:${IMAGE_TAG:?}
+
+  luminus-dynamic-api:
+    build:
+      context: ./luminus-dynamic-api/
+      args:
+        - IMAGE_TAG=${IMAGE_TAG:?}
+    ports:
+      - 5002:5000
+    image: ohmymndy/luminus-dynamic-api:${IMAGE_TAG:?}
