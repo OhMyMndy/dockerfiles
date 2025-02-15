@@ -10,7 +10,9 @@ on:
   schedule:
     # At 00:00 on Sunday
     - cron: "0 0 * * 0"
-
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
