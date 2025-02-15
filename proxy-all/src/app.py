@@ -25,6 +25,11 @@ def prepend_base_url(base_url: str, target_base_url: str, url: str) -> str:
         )
 
 
+@app.route("/healthz")
+def health_check():
+    return "OK", 200
+
+
 @app.route("/", methods=["GET"])
 def proxy():
     target_url = request.args.get("q")

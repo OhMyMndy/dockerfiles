@@ -12,6 +12,11 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
+@app.route("/healthz")
+def health_check():
+    return "OK", 200
+
+
 @app.route("/", methods=["GET"])
 def proxy():
     url = "https://my.luminusbusiness.be/market-info/nl/dynamic-prices/"

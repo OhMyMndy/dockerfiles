@@ -77,8 +77,22 @@ services:
       args:
         - IMAGE_TAG=${IMAGE_TAG:?}
     ports:
-      - 5001:5000
+      - 5003:5000
     image: ohmymndy/proxy-all:${IMAGE_TAG:?}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:5000/healthz",
+        ]
+      interval: 1m
+      timeout: 1s
+      start_period: 30s
+      start_interval: 2s
 
   luminus-dynamic-api:
     build:
@@ -86,5 +100,19 @@ services:
       args:
         - IMAGE_TAG=${IMAGE_TAG:?}
     ports:
-      - 5002:5000
+      - 5004:5000
     image: ohmymndy/luminus-dynamic-api:${IMAGE_TAG:?}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:5000/healthz",
+        ]
+      interval: 1m
+      timeout: 1s
+      start_period: 30s
+      start_interval: 2s
