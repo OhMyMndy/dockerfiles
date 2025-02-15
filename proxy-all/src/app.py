@@ -14,11 +14,7 @@ logging.basicConfig(level=logging.INFO)
 ALLOWED_DOMAINS = []
 
 
-def is_allowed(url):
-    return True
-
-
-def prepend_base_url(base_url, target_base_url, url):
+def prepend_base_url(base_url: str, target_base_url: str, url: str) -> str:
     if url.startswith(("http://", "https://")):
         return base_url + "?q=" + urllib.parse.quote_plus(url)
     else:
@@ -34,9 +30,6 @@ def proxy():
     target_url = request.args.get("q")
     if not target_url:
         return Response("Missing 'q' query parameter.", status=400)
-
-    if not is_allowed(target_url):
-        return Response("URL not allowed.", status=403)
 
     try:
         headers = {key: value for key, value in request.headers if key != "Host"}
