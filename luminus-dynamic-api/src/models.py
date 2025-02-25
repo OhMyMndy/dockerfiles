@@ -19,8 +19,8 @@ class EnergyPrice(db.Model, JSONEncoder):
     price: Mapped[float] = mapped_column()
 
     def to_json(self):
-        return {
+        return {key: value for key, value in {
             "id": self.id,
             "date": self.date.isoformat(sep=" "),
             "price": self.price,
-        }
+        }.items() if value is not None}
