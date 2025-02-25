@@ -1,0 +1,45 @@
+services:
+
+
+  proxy-all:
+    build:
+      context: ./proxy-all
+      args:
+        - IMAGE_TAG=${IMAGE_TAG:?}
+    ports:
+      - 5030:8000
+    image: ohmymndy/proxy-all:${IMAGE_TAG:?}
+    environment:
+      - TARGET_URL=https://api.deezer.com
+    volumes:
+      - proxy-all-access-logs:/app/logs
+    init: true
+    user: 65534:1000
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--spider",
+          "-q",
+          "-T",
+          "1",
+          "http://0.0.0.0:8000/healthz",
+        ]
+      interval: 1m
+      timeout: 1s
+      start_period: 30s
+      start_interval: 2s
+
+  proxy-all-access-logs:
+    image: docker.elastic.co/beats/filebeat:8.17.0
+    depends_on:
+      - proxy-all
+    command: ["filebeat", "-e", "-c", "/usr/share/filebeat/filebeat.yml"]
+    restart: unless-stopped
+    volumes:
+      - ./proxy-all/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - proxy-all-access-logs:/app/logs
+
+volumes:
+  proxy-all-access-logs:

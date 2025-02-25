@@ -1,61 +1,9 @@
+include:
+  - docker-compose.kasm.yml
+  - docker-compose.lda.yml
+  - docker-compose.proxy-all.yml
+
 services:
-  kasm-ubuntu-base:
-    build:
-      context: ./kasm/kasm-ubuntu-base
-    image: ohmymndy/kasm-ubuntu-base:${IMAGE_TAG:?}
-    shm_size: 1gb
-
-  kasm-obsidian:
-    build:
-      context: ./kasm/kasm-obsidian
-      args:
-        - IMAGE_TAG=${IMAGE_TAG:?}
-    image: ohmymndy/kasm-obsidian:${IMAGE_TAG:?}
-    shm_size: 1gb
-    ports:
-      - 6901:6901/tcp
-      - 6901:6901/udp
-    environment:
-      - VNC_PW=password
-    depends_on:
-      - kasm-ubuntu-base
-
-  kasm-ubuntu-nix-base:
-    build:
-      context: ./kasm/kasm-ubuntu-nix-base
-      args:
-        - IMAGE_TAG=${IMAGE_TAG:?}
-    image: ohmymndy/kasm-ubuntu-nix-base:${IMAGE_TAG:?}
-    shm_size: 1gb
-    ports:
-      - 6902:6901/tcp
-      - 6902:6901/udp
-    environment:
-      - VNC_PW=password
-    depends_on:
-      - kasm-ubuntu-base
-
-  kasm-el-base:
-    build:
-      context: ./kasm/kasm-el-base
-    image: ohmymndy/kasm-el-base:${IMAGE_TAG:?}
-    shm_size: 1gb
-
-  kasm-el-nix-base:
-    build:
-      context: ./kasm/kasm-el-nix-base
-      args:
-        - IMAGE_TAG=${IMAGE_TAG:?}
-    image: ohmymndy/kasm-el-nix-base:${IMAGE_TAG:?}
-    shm_size: 1gb
-    ports:
-      - 6903:6901/tcp
-      - 6903:6901/udp
-    environment:
-      - VNC_PW=password
-    depends_on:
-      - kasm-el-base
-
   insync:
     build:
       context: ./insync
@@ -71,48 +19,5 @@ services:
     privileged: true
     image: ohmymndy/virter:${IMAGE_TAG:?}
 
-  proxy-all:
-    build:
-      context: ./proxy-all
-      args:
-        - IMAGE_TAG=${IMAGE_TAG:?}
-    ports:
-      - 5003:5000
-    image: ohmymndy/proxy-all:${IMAGE_TAG:?}
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost:5000/healthz",
-        ]
-      interval: 1m
-      timeout: 1s
-      start_period: 30s
-      start_interval: 2s
-
-  luminus-dynamic-api:
-    build:
-      context: ./luminus-dynamic-api/
-      args:
-        - IMAGE_TAG=${IMAGE_TAG:?}
-    ports:
-      - 5004:5000
-    image: ohmymndy/luminus-dynamic-api:${IMAGE_TAG:?}
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost:5000/healthz",
-        ]
-      interval: 1m
-      timeout: 1s
-      start_period: 30s
-      start_interval: 2s
+volumes:
+  proxy-all-access-logs:
