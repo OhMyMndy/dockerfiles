@@ -6,12 +6,14 @@ import urllib.parse
 import logging
 from bs4 import BeautifulSoup
 from pygments.lexers import guess_lexer
+import os
 
 app = Flask(__name__)
 
 logging.basicConfig(level=logging.INFO)
 
 ALLOWED_DOMAINS = []
+TARGET_URL = os.environ.get("TARGET_URL")
 
 
 def prepend_base_url(base_url: str, target_base_url: str, url: str) -> str:
@@ -36,6 +38,8 @@ def proxy():
     if not target_url:
         return Response("Missing 'q' query parameter.", status=400)
 
+    if TARGET_URL is not None:
+        target_url = TARGET_URL + request.path
     try:
         headers = {key: value for key, value in request.headers if key != "Host"}
         headers = {}
@@ -57,6 +61,7 @@ def proxy():
             for (name, value) in resp.raw.headers.items()
             if name.lower() not in excluded_headers
         ]
+        headers.append(("Access-Control-Allow-Origin", "*"))
 
         logging.info(f"Proxied URL: {target_url} | Status: {resp.status_code}")
 
