@@ -32,7 +32,7 @@ services:
       start_interval: 2s
 
   proxy-all-access-logs:
-    image: docker.elastic.co/beats/filebeat:8.17.0
+    image: docker.elastic.co/beats/filebeat:8.17.3
     depends_on:
       - proxy-all
     command: ["filebeat", "-e", "-c", "/usr/share/filebeat/filebeat.yml"]
