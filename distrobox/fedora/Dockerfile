@@ -1,4 +1,4 @@
-ARG TAG=41
+ARG TAG=43
 FROM quay.io/fedora/fedora:${TAG}
 
 RUN dnf install -y git
