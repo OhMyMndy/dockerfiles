@@ -1,14 +1,12 @@
-ARG BASE_IMAGE="kasmweb/core-ubuntu-noble:develop"
+ARG BASE_IMAGE="kasmweb/core-ubuntu-noble:1.16.1-rolling-daily"
 FROM $BASE_IMAGE
 USER root
 
-RUN apt-get update && \
-    apt-get install -y software-properties-common sudo && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y software-properties-common sudo && apt-get clean
 
 
-RUN curl -sL https://raw.githubusercontent.com/wimpysworld/deb-get/main/deb-get | sudo -E bash -s install deb-get
+RUN curl -sL https://raw.githubusercontent.com/wimpysworld/deb-get/main/deb-get | sudo -E bash -s install deb-get \
+    && apt-get clean
 
 RUN usermod -aG sudo kasm-user
 RUN passwd -d kasm-user

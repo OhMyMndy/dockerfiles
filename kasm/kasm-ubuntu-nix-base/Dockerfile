@@ -4,7 +4,7 @@ FROM $BASE_IMAGE
 
 
 USER kasm-user
-ENV NIX_VERSION=2.22.0
+ENV NIX_VERSION=2.27.0
 ENV LD_LIBRARY_PATH=
 # RUN curl -SsL https://releases.nixos.org/nix/nix-$NIX_VERSION/install | sh -x -s -- --no-daemon
 RUN curl -SsL https://nixos.org/nix/install | sh -x -s -- --no-daemon

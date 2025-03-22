@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="kasmweb/core-rockylinux-9:develop"
+ARG BASE_IMAGE="kasmweb/core-rockylinux-9:1.16.1-rolling-daily"
 FROM $BASE_IMAGE
 USER root
 

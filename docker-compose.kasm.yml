@@ -4,6 +4,9 @@ services:
       context: ./kasm/kasm-ubuntu-base
     image: ohmymndy/kasm-ubuntu-base:${IMAGE_TAG:?}
     shm_size: 1gb
+    ports:
+      - 6902:6901/tcp
+      - 6902:6901/udp
 
   kasm-obsidian:
     build:
