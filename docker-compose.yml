@@ -2,6 +2,7 @@ include:
   - docker-compose.kasm.yml
   - docker-compose.lda.yml
   - docker-compose.proxy-all.yml
+  - docker-compose.distrobox.yml
 
 services:
   insync:

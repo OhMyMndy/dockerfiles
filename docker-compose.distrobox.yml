@@ -1,0 +1,7 @@
+services:
+  distrobox-fedora:
+    build:
+      context: ./distrobox/fedora
+    image: ohmymndy/distrobox-fedora:${IMAGE_TAG:?}
+    init: true
+    entrypoint: ["/bin/bash", "-c", "tail -f /dev/null"]
