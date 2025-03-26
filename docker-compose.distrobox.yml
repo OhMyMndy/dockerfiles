@@ -5,3 +5,21 @@ services:
     image: ohmymndy/distrobox-fedora:${IMAGE_TAG:?}
     init: true
     entrypoint: ["/bin/bash", "-c", "tail -f /dev/null"]
+
+  distrobox-opensuse-leap:
+    build:
+      context: ./distrobox/opensuse
+      args:
+        IMAGE: docker.io/opensuse/leap:15.6
+    image: ohmymndy/distrobox-opensuse-leap:${IMAGE_TAG:?}
+    init: true
+    entrypoint: ["/bin/bash", "-c", "tail -f /dev/null"]
+
+  distrobox-opensuse-tumbleweed:
+    build:
+      context: ./distrobox/opensuse
+      args:
+        IMAGE: docker.io/opensuse/tumbleweed:latest
+    image: ohmymndy/distrobox-opensuse-tumbleweed:${IMAGE_TAG:?}
+    init: true
+    entrypoint: [ "/bin/bash", "-c", "tail -f /dev/null" ]
