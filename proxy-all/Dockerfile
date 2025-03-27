@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir gunicorn
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./src /app 
+COPY ./src /app
 
 USER nobody
-ENTRYPOINT [ "gunicorn", "-w", "4", "--bind", "0.0.0.0:8000", "--access-logfile", "/app/logs/access.log", "app:app" ]
+ENTRYPOINT ["gunicorn", "-w", "4", "--bind", "0.0.0.0:8000", "--access-logfile", "/app/logs/access.log", "app:app"]

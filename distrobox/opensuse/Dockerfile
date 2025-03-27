@@ -1,7 +1,7 @@
 ARG IMAGE=docker.io/opensuse/leap:15.6
 FROM $IMAGE
 
-RUN zypper install -y git awk sed
+RUN zypper install -y git awk sed less && zypper clean
 
 RUN git clone https://github.com/89luca89/distrobox.git \
     && cd distrobox \

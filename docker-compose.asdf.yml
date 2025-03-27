@@ -1,11 +1,10 @@
+name: "dockerfiles"
 services:
   asdf:
+    image: ohmymndy/asdf:${IMAGE_TAG:?}
     build:
       context: ./asdf/
-    image: ohmymndy/asdf:${IMAGE_TAG:?}
-    init: true
     volumes:
       - ./asdf/asdf-plugins.sh:/bin/asdf-plugins.sh:ro
     entrypoint: ["/bin/bash", "-c", "tail -f /dev/null"]
-    # To test the asdf plugins:
-    # docker compose exec asdf /bin/asdf-plugins.sh
+    init: true

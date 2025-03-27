@@ -1,5 +1,14 @@
 # Dockerfiles
 
+Secure container workflow
+
+```mermaid
+graph LR
+    A[Hadolint]-->B[Push]
+
+    B-->C[Hadolint]-->D[Build]
+```
+
 ## Kasm
 
 ## Insync
@@ -37,14 +46,13 @@ sleep 30
 virter vm ssh alma-9 # or `ssh alma-9`
 ```
 
-# Python projects
+## Python projects
 
-```
+```bash
 uv venv
 uv pip install -r requirements
 uv run ./src/app.py
 
 # or for Flask applications
 uv run flask --app src/app.py --debug run
-
 ```

@@ -13,4 +13,4 @@ COPY ./src /app
 RUN chown -R nobody:nobody /app
 
 USER nobody
-ENTRYPOINT [ "gunicorn", "-w", "1", "--bind", "0.0.0.0:8000", "--access-logfile", "/app/log/access.log", "app:app" ]
+ENTRYPOINT ["gunicorn", "-w", "1", "--bind", "0.0.0.0:8000", "--access-logfile", "/app/log/access.log", "app:app"]

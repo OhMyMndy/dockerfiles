@@ -1,7 +1,7 @@
 ARG TAG=41
 FROM quay.io/fedora/fedora:${TAG}
 
-RUN dnf install -y git
+RUN dnf install -y git && dnf clean all
 
 RUN git clone https://github.com/89luca89/distrobox.git \
     && cd distrobox \
