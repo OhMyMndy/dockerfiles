@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/zavoloklom/docker-compose-linter/refs/heads/main/schemas/linter-config.schema.json",
+  "rules": {
+    "require-project-name-field": 0,
+    "service-image-require-explicit-tag": 2,
+    "no-unbound-port-interfaces": 0,
+    "no-build-and-image": 0,
+    "no-version-field": 2,
+    "top-level-properties-order": 2,
+    "require-quotes-in-ports": [
+          1,
+          {
+            "quoteType": "double"
+          }
+        ],
+    "services-alphabetical-order": 2
+  },
+  "quiet": false,
+  "debug": true,
+  "exclude": [
+    "tests"
+  ]
+}

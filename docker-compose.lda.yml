@@ -7,12 +7,22 @@ x-luminus-dynamic-api: &x-luminus-dynamic-api
   environment:
     SQLALCHEMY_DATABASE_URI: postgresql://postgres:password@postgres-lda:5432/luminus-dynamic-api
   init: true
+name: "dockerfiles"
 
 services:
-  luminus-dynamic-api-web:
+  luminus-dynamic-api-cli:
+    command:
+      - -c
+      - |
+        while true; do
+          python /app/sync.py
+          sleep 3600
+        done
+    entrypoint: ash
     <<: *x-luminus-dynamic-api
+  luminus-dynamic-api-web:
     ports:
-      - 5029:8000
+      - "5029:8000"
     healthcheck:
       test:
         [
@@ -28,25 +38,15 @@ services:
       timeout: 1s
       start_period: 30s
       start_interval: 2s
-
-  luminus-dynamic-api-cli:
     <<: *x-luminus-dynamic-api
-    entrypoint: ash
-    command:
-      - -c
-      - |
-        while true; do
-          python /app/sync.py
-          sleep 3600
-        done
 
   postgres-lda:
     image: postgres:17-alpine
-    restart: unless-stopped
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=luminus-dynamic-api
+    restart: unless-stopped
     healthcheck:
       test:
         [

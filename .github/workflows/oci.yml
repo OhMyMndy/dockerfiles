@@ -20,6 +20,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # super-linter needs the full git history to get the
+          # list of files that changed across commits
+          fetch-depth: 0
+
       - uses: extractions/setup-just@v3
 
       - name: Login to Docker Hub
@@ -28,6 +33,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Lint
+        run: |
+          just lint
 
       - name: Build images
         env:

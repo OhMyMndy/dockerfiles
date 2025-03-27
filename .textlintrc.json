@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "no-todo": true,
+    "languagetool": true,
+    "no-bold-paragraph": true,
+    "alex": {
+      "allow": []
+    }
+  }
+}

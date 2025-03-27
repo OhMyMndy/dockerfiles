@@ -1,25 +1,30 @@
+x-distrobox: &x-luminus-dynamic-api
+  cpus: 0.5
+  mem_limit: 1024m
+  init: true
+
 services:
   distrobox-fedora:
+    image: ohmymndy/distrobox-fedora:${IMAGE_TAG:?}
     build:
       context: ./distrobox/fedora
-    image: ohmymndy/distrobox-fedora:${IMAGE_TAG:?}
-    init: true
     entrypoint: ["/bin/bash", "-c", "tail -f /dev/null"]
+    init: true
 
   distrobox-opensuse-leap:
+    image: ohmymndy/distrobox-opensuse-leap:${IMAGE_TAG:?}
     build:
       context: ./distrobox/opensuse
       args:
         IMAGE: docker.io/opensuse/leap:15.6
-    image: ohmymndy/distrobox-opensuse-leap:${IMAGE_TAG:?}
-    init: true
     entrypoint: ["/bin/bash", "-c", "tail -f /dev/null"]
+    init: true
 
   distrobox-opensuse-tumbleweed:
+    image: ohmymndy/distrobox-opensuse-tumbleweed:${IMAGE_TAG:?}
     build:
       context: ./distrobox/opensuse
       args:
         IMAGE: docker.io/opensuse/tumbleweed:latest
-    image: ohmymndy/distrobox-opensuse-tumbleweed:${IMAGE_TAG:?}
+    entrypoint: ["/bin/bash", "-c", "tail -f /dev/null"]
     init: true
-    entrypoint: [ "/bin/bash", "-c", "tail -f /dev/null" ]

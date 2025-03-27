@@ -4,7 +4,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG INSYNC_VERSION=3.2.7.10758
 ENV INSYNC_VERSION=${INSYNC_VERSION}
 
-
 RUN apt-get update && apt-get install -y --no-install-recommends \
   curl \
   apt-transport-https \
@@ -18,6 +17,6 @@ RUN curl -L -o insync-headless.deb https://cdn.insynchq.com/builds/linux/${INSYN
 
 COPY entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT [ "/entrypoint.sh" ]
+ENTRYPOINT ["/entrypoint.sh"]
 
 USER ubuntu

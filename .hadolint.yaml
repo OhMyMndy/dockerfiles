@@ -1,0 +1,9 @@
+ignored:
+  - DL3008 # warning: Pin versions in apt get install.
+  - DL3037 # warning: Specify version with `zypper install -y <package>=<version>`.
+  - DL4006 # warning: Set the SHELL option -o pipefail before RUN with a pipe in it.
+  - DL3041 # warning: Specify version with `dnf install -y <package>-<version>`.
+  # TODO: enable DL3015
+  - DL3015 # info: Avoid additional packages by specifying `--no-install-recommends`
+  - DL3006 # warning: Always tag the version of an image explicitly
+  - DL3003 # warning: Use WORKDIR to switch to a directory

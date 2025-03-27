@@ -14,5 +14,4 @@ vl up
 
 ```bash
 virter image pull alma-9
-
 ```
