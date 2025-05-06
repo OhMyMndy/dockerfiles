@@ -30,7 +30,7 @@ services:
     init: true
 
   proxy-all-access-logs:
-    image: docker.elastic.co/beats/filebeat:8.17.3
+    image: docker.elastic.co/beats/filebeat:8.18.1
     depends_on:
       - proxy-all
     volumes:
