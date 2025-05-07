@@ -1,4 +1,4 @@
-ARG IMAGE=docker.io/opensuse/leap:15.6
+ARG IMAGE=docker.io/opensuse/leap:42.3
 FROM $IMAGE
 
 RUN zypper install -y git awk sed less && zypper clean
