@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="kasmweb/core-ubuntu-noble:1.16.1-rolling-daily"
+ARG BASE_IMAGE="kasmweb/core-ubuntu-noble:1.17.0-rolling-daily"
 FROM $BASE_IMAGE
 
 USER root
